@@ -3,6 +3,7 @@ package xzf_qiniu
 import (
 	"gopkg.in/ini.v1"
 	"log"
+	"os"
 )
 
 var (
@@ -13,7 +14,8 @@ var (
 )
 
 func init() {
-	f, err := ini.Load("/Users/yuanshun/workspace/my/prettyy/server/config/qiniu/default.ini")
+	pwd, _ := os.Getwd()
+	f, err := ini.Load(pwd + "/config/qiniu/default.ini")
 	if err != nil {
 		log.Fatalf("read config file err: %s", err.Error())
 	}
