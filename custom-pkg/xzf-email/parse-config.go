@@ -1,7 +1,6 @@
 package xzf_email
 
 import (
-	"fmt"
 	"gopkg.in/ini.v1"
 	"log"
 	"os"
@@ -18,9 +17,7 @@ var (
 )
 
 func init() {
-	pwd, _ := os.Getwd()
-	fmt.Println("pwd.....", pwd)
-	f, err := ini.Load(pwd + "/config/config.ini")
+	f, err := ini.Load(os.Getenv("PRETTYY_CONF_ROOT") + "/email/default.ini")
 	if err != nil {
 		log.Fatalf("read config file err: %s", err.Error())
 	}

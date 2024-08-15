@@ -6,6 +6,7 @@ import (
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm/logger"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -69,7 +70,7 @@ func NewConfig(name string) (*Config, error) {
 	if name == "" {
 		return nil, errors.New("mysql config name is empty")
 	}
-	configFile := fmt.Sprintf("%s/%s.ini", rootDir, name)
+	configFile := fmt.Sprintf("%s/mysql/%s/default.ini", os.Getenv("PRETTYY_CONF_ROOT"), name)
 	f, err := ini.Load(configFile)
 	if err != nil {
 		return nil, err

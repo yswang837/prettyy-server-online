@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	rootDir            = "config/redis"
 	ErrInvalidContents = errors.New("config: invalid contents")
 	defaultGroup       = "default"
 	redisSection       = "redis"
@@ -93,7 +92,7 @@ func NewConfigByFile(configFile string) (*Config, error) {
 }
 
 func checkName(name string) (filename string, err error) {
-	cfgFile := fmt.Sprintf("%s/%s/%s.ini", rootDir, name, defaultGroup)
+	cfgFile := fmt.Sprintf("%s/redis/%s/%s.ini", os.Getenv("PRETTYY_CONF_ROOT"), name, defaultGroup)
 	filename, err = checkFile(cfgFile)
 
 	return

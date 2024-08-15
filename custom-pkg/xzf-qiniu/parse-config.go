@@ -14,8 +14,8 @@ var (
 )
 
 func init() {
-	pwd, _ := os.Getwd()
-	f, err := ini.Load(pwd + "/config/qiniu/default.ini")
+	pwd := os.Getenv("PRETTYY_CONF_ROOT")
+	f, err := ini.Load(pwd + "/qiniu/default.ini")
 	if err != nil {
 		log.Fatalf("read config file err: %s", err.Error())
 	}
