@@ -15,10 +15,19 @@ var (
 		signAttr    []string
 		allowCaller *hashset.Set
 	}{
-		conf.URLRegister:            {signAttr: []string{"email", "password", "identity_code"}, allowCaller: hashset.New("test")},
 		conf.URLIdentifyCodeByEmail: {signAttr: []string{"email"}, allowCaller: hashset.New("test")},
+		conf.URLIdentifyCode:        {signAttr: []string{""}, allowCaller: hashset.New("test")},
+		conf.URLRegisterLogin:       {signAttr: []string{"email", "password", "identity_code"}, allowCaller: hashset.New("test")},
 		conf.URLCheckPassword:       {signAttr: []string{"email"}, allowCaller: hashset.New("test")},
 		conf.URLLoginOut:            {signAttr: []string{""}, allowCaller: hashset.New("test")},
+		conf.URLUpdateNickName:      {signAttr: []string{"email", "nick_name"}, allowCaller: hashset.New("test")},
+		conf.URLUpdateGender:        {signAttr: []string{"email", "gender"}, allowCaller: hashset.New("test")},
+		conf.URLUpdateSummary:       {signAttr: []string{"email", "summary"}, allowCaller: hashset.New("test")},
+		conf.URLUpdateProvinceCity:  {signAttr: []string{"email", "province", "city"}, allowCaller: hashset.New("test")},
+		conf.URLUpdateBirthday:      {signAttr: []string{"email"}, allowCaller: hashset.New("test")},
+		conf.URLPublishArticle:      {signAttr: []string{"title", "summary", "uid"}, allowCaller: hashset.New("test")},
+		conf.URLGetArticleList:      {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
+		conf.URLGetArticleDetail:    {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
 	}
 	callerPin = map[string]string{
 		"test": "098f6bcd4621d373cade4e832627b4f6", // 测试的调用方和pin，

@@ -1,11 +1,11 @@
 package conf
 
 const (
-	URLRegister            = "/user/login-register"
 	URLIdentifyCodeByEmail = "/user/captcha-by-email"
 	URLIdentifyCode        = "/user/captcha"
-	URLLoginOut            = "/user/login-out"
+	URLRegisterLogin       = "/user/login-register"
 	URLCheckPassword       = "/user/check-password"
+	URLLoginOut            = "/user/login-out"
 	URLUpdateNickName      = "/user/nick-name"
 	URLUpdateGender        = "/user/gender"
 	URLUpdateSummary       = "/user/summary"

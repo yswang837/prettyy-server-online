@@ -19,7 +19,7 @@ func (s *Server) Init() (err error) {
 }
 
 func (s *Server) SetRoute(r *gin.Engine) {
-	r.POST(conf.URLRegister, func(context *gin.Context) {
+	r.POST(conf.URLRegisterLogin, func(context *gin.Context) {
 		s.LoginRegister(context)
 	})
 	// 通过邮件发送验证码，账密登录获取验证码，都需要走频次限制的中间件

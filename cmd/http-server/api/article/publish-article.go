@@ -13,11 +13,11 @@ import (
 // 2000120
 
 type articleParams struct {
-	Title    string `json:"title" form:"title" binding:"required"`     // 文章标题
-	Content  string `json:"content" form:"content" binding:"required"` // 文章内容
-	Uid      int64  `json:"uid" form:"uid" binding:"required"`         // 用户id
-	CoverImg string `json:"cover_img" form:"cover_img"`                // 文章封面url
-	Summary  string `json:"summary" form:"summary"`                    // 文章摘要
+	Title    string `json:"title" form:"title" binding:"required"`         // 文章标题
+	Content  string `json:"content" form:"content" binding:"required"`     // 文章内容
+	Uid      int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
+	CoverImg string `json:"cover_img" form:"cover_img" binding:"required"` // 文章封面url
+	Summary  string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
 
 }
 
