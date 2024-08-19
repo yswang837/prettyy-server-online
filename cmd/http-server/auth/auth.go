@@ -28,6 +28,7 @@ var (
 		conf.URLPublishArticle:      {signAttr: []string{"title", "summary", "uid"}, allowCaller: hashset.New("test")},
 		conf.URLGetArticleList:      {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
 		conf.URLGetArticleDetail:    {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
+		conf.URLFileUpload:          {signAttr: []string{""}, allowCaller: hashset.New("test")},
 	}
 	callerPin = map[string]string{
 		"test": "098f6bcd4621d373cade4e832627b4f6", // 测试的调用方和pin，
