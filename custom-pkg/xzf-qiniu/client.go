@@ -11,7 +11,7 @@ func UploadFile(file multipart.File, fileSize int64) (string, error) {
 	putPolicy := storage.PutPolicy{Scope: Bucket}
 	mac := qbox.NewMac(AccessKey, SecretKey)
 	upToken := putPolicy.UploadToken(mac)
-	cfg := storage.Config{Zone: &storage.ZoneHuabei}
+	cfg := storage.Config{Zone: &storage.ZoneXinjiapo}
 	putExtra := storage.PutExtra{}
 	formUploader := storage.NewFormUploader(&cfg)
 	ret := storage.PutRet{}
