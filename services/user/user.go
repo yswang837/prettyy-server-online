@@ -165,6 +165,21 @@ func UpdateLoginTime(email string) error {
 	return defaultClient.UpdateLoginTime(email)
 }
 
+func (c *Client) UpdatePassword(email, password string) error {
+	if email == "" || password == "" {
+		return tool.ErrParams
+	}
+	_, err := c.cacheManager.HSet(email, "password", password)
+	if err != nil {
+		return errors.New("redis update password failed: " + err.Error())
+	}
+	return c.manager.UpdatePassword(email, password)
+}
+
+func UpdatePassword(email, password string) error {
+	return defaultClient.UpdatePassword(email, password)
+}
+
 func UpdateNickName(email, nickName string) error {
 	return defaultClient.UpdateNickName(email, nickName)
 }

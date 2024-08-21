@@ -61,6 +61,16 @@ func (m *Manager) UpdateLoginTime(email string) error {
 	return nil
 }
 
+func (m *Manager) UpdatePassword(email, password string) error {
+	if email == "" || password == "" {
+		return tool.ErrParams
+	}
+	if err := m.master(email).Scopes(withEmail(email)).Update("password", password).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *Manager) UpdateNickName(email, nickName string) error {
 	if email == "" || nickName == "" {
 		return tool.ErrParams

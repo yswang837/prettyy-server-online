@@ -40,6 +40,10 @@ func (s *Server) SetRoute(r *gin.Engine) {
 		s.UpdateProvinceCity(context)
 	})
 	groupHandler.POST(conf.URLUpdateBirthday, func(context *gin.Context) {
-		s.updateBirthdayParams(context)
+		s.UpdateBirthday(context)
 	})
+	groupHandler.POST(conf.URLUpdatePassword, func(context *gin.Context) {
+		s.UpdatePassword(context)
+	})
+
 }

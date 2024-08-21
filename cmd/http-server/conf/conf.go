@@ -11,6 +11,7 @@ const (
 	URLUpdateSummary       = "/user/summary"
 	URLUpdateProvinceCity  = "/user/province-city"
 	URLUpdateBirthday      = "/user/birthday"
+	URLUpdatePassword      = "/user/password"
 	URLPublishArticle      = "/article/publish"
 	URLFileUpload          = "/file/upload"
 	URLGetArticleDetail    = "/article/detail"

@@ -12,10 +12,10 @@ type updateBirthdayParams struct {
 	Birthday string `json:"birthday" form:"birthday" binding:"required"`
 }
 
-// UpdateBirthdayCity 更新用户的出生日期
+// UpdateBirthday 更新用户的出生日期
 // 4000280
 // 2000280
-func (s *Server) updateBirthdayParams(ctx *gin.Context) {
+func (s *Server) UpdateBirthday(ctx *gin.Context) {
 	p := &updateBirthdayParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(400, ginConsulRegister.Response{Code: 4000280, Message: "bind params err"})

@@ -25,6 +25,7 @@ var (
 		conf.URLUpdateSummary:       {signAttr: []string{"email", "summary"}, allowCaller: hashset.New("test")},
 		conf.URLUpdateProvinceCity:  {signAttr: []string{"email", "province", "city"}, allowCaller: hashset.New("test")},
 		conf.URLUpdateBirthday:      {signAttr: []string{"email"}, allowCaller: hashset.New("test")},
+		conf.URLUpdatePassword:      {signAttr: []string{"email", "password"}, allowCaller: hashset.New("test")},
 		conf.URLPublishArticle:      {signAttr: []string{"title", "summary", "uid"}, allowCaller: hashset.New("test")},
 		conf.URLGetArticleList:      {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
 		conf.URLGetArticleDetail:    {signAttr: []string{"page", "page_size"}, allowCaller: hashset.New("test")},
