@@ -120,5 +120,5 @@ func sortParams(m url.Values) string {
 		}
 	}
 	sort.Strings(params)
-	return strings.Join(params, "&")
+	return strings.Join(params, "")
 }
