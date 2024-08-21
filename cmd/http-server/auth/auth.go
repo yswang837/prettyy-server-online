@@ -110,7 +110,9 @@ func sortParams(m url.Values) string {
 	}
 	var params []string
 	for k, v := range m {
-		if k == "sign" {
+		// 上传文件接口，file字段本身就获取不到，这里也写明直接排除
+		// 发布文章接口，content内容多且杂，也排除
+		if k == "sign" || k == "file" || k == "content" {
 			continue
 		}
 		if len(v) != 0 {
