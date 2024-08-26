@@ -16,7 +16,7 @@ const (
 	dataIntegrity      = 30  // 注册用户，资料完整度默认30%
 	identifyCodeExpire = 300 // 验证码有效期5分钟
 	avatar             = "https://s21.ax1x.com/2024/07/05/pkRgyT0.jpg"
-	uidIncrKey         = "dd-blog-uid"
+	uidIncrKey         = "bj-blog-uid"
 	gender             = "保密" // 性别未知
 )
 
@@ -56,11 +56,10 @@ func (c *Client) Add(u *user.User) (err error) {
 	u.CodeAge = codeAge
 	u.Gender = gender
 	u.DataIntegrity = dataIntegrity
-	u.NickName = strings.Split(u.Email, "@")[0]
+	u.NickName = strings.Split(u.Email, "@")[0] // 默认用户名用邮箱前缀代替
 	if err = c.manager.Add(u); err != nil {
 		return errors.New("register to mysql failed: " + err.Error())
 	}
-
 	u.CreateTime = time.Now()
 	u.UpdateTime = time.Now()
 	u.LoginTime = time.Now()
