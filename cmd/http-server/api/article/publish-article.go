@@ -2,6 +2,7 @@ package article
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	article2 "prettyy-server-online/data/article"
 	"prettyy-server-online/services/article"
@@ -24,10 +25,9 @@ type articleParams struct {
 func (s *Server) PublishArticle(ctx *gin.Context) {
 	params := &articleParams{}
 	if err := ctx.Bind(params); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000120, Message: "参数绑定错误"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
 		return
 	}
-
 	a := &article2.Article{
 		Title:    params.Title,
 		Content:  tool.Base64Encode(params.Content),
@@ -36,9 +36,9 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		Uid:      params.Uid,
 	}
 	if err := article.Add(a); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
 	return
 }
