@@ -19,20 +19,20 @@ type updateSummaryParams struct {
 func (s *Server) UpdateSummary(ctx *gin.Context) {
 	p := &updateSummaryParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000240, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000240, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000241, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000241, Message: "获取用户信息失败"})
 		return
 	}
 	if p.Summary == u.Summary {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000242, Message: "个人简介未改变"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000242, Message: "个人简介未改变"})
 		return
 	}
 	if err := user.UpdateSummary(p.Email, p.Summary); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000243, Message: "个人简介更新失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000243, Message: "个人简介更新失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000240, Message: "个人简介更新成功"})

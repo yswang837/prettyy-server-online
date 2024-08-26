@@ -18,16 +18,16 @@ type checkPasswordParams struct {
 func (s *Server) CheckPassword(ctx *gin.Context) {
 	p := &checkPasswordParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000021, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000021, Message: "获取用户信息失败"})
 		return
 	}
 	if u.Password == "" {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000022, Message: "密码为空，请设置密码"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000022, Message: "密码为空，请设置密码"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000021, Message: "有效的密码"})

@@ -21,16 +21,16 @@ type articleListParams struct {
 func (s *Server) ArticleList(ctx *gin.Context) {
 	params := &articleListParams{}
 	if err := ctx.Bind(params); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})
 		return
 	}
 	a, err := article.GetArticleList(params.Page, params.PageSize)
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000181, Message: "没有更多数据", Result: []article2.Article{}})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000181, Message: "没有更多数据", Result: []article2.Article{}})
 			return
 		}
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000182, Message: "获取文章列表失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000182, Message: "获取文章列表失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000180, Message: "获取文章列表成功", Result: a})

@@ -23,7 +23,7 @@ func (s *Server) GetIdentifyCode(ctx *gin.Context) {
 	cp := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败"})
 		return
 	}
 	resp := &captchaResponse{

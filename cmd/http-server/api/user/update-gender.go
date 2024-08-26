@@ -19,11 +19,11 @@ type updateGenderParams struct {
 func (s *Server) UpdateGender(ctx *gin.Context) {
 	p := &updateGenderParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000220, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000220, Message: "参数错误"})
 		return
 	}
 	if err := user.UpdateGender(p.Email, p.Gender); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000221, Message: "更新性别失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000221, Message: "更新性别失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000220, Message: "更新性别成功"})

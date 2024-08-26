@@ -19,20 +19,20 @@ type updateBirthdayParams struct {
 func (s *Server) UpdateBirthday(ctx *gin.Context) {
 	p := &updateBirthdayParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000281, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000281, Message: "获取用户信息失败"})
 		return
 	}
 	if p.Birthday == u.Birthday {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000282, Message: "生日未改变"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000282, Message: "生日未改变"})
 		return
 	}
 	if err := user.UpdateBirthdayCity(p.Email, p.Birthday); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000283, Message: "更新生日失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000283, Message: "更新生日失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000280, Message: "更新生日成功"})

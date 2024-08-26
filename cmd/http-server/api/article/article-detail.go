@@ -18,12 +18,12 @@ type articleDetailParams struct {
 func (s *Server) ArticleDetail(ctx *gin.Context) {
 	params := &articleDetailParams{}
 	if err := ctx.Bind(params); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000160, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000160, Message: "参数错误"})
 		return
 	}
 	articleDetail, err := article.Get(params.Aid)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000161, Message: "获取文章详情失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000161, Message: "获取文章详情失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000160, Message: "获取文章详情成功", Result: articleDetail})

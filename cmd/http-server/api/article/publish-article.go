@@ -25,7 +25,7 @@ type articleParams struct {
 func (s *Server) PublishArticle(ctx *gin.Context) {
 	params := &articleParams{}
 	if err := ctx.Bind(params); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
 		return
 	}
 	a := &article2.Article{
@@ -36,7 +36,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		Uid:      params.Uid,
 	}
 	if err := article.Add(a); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})

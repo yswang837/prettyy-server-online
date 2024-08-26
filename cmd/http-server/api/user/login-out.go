@@ -14,11 +14,11 @@ import (
 func (s *Server) LoginOut(ctx *gin.Context) {
 	token := tool.GetToken(ctx)
 	if token == "" {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000060, Message: "token为空"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000060, Message: "token为空"})
 		return
 	}
 	if err := user.SetExByToken(token); err != nil {
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000061, Message: "token作废失败"})
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000061, Message: "token作废失败"})
 		return
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000060, Message: "token作废成功"})
