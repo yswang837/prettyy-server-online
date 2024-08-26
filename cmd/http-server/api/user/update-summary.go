@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
 )
@@ -18,22 +19,22 @@ type updateSummaryParams struct {
 func (s *Server) UpdateSummary(ctx *gin.Context) {
 	p := &updateSummaryParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000240, Message: "bind params err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000240, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000241, Message: "get user err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000241, Message: "获取用户信息失败"})
 		return
 	}
 	if p.Summary == u.Summary {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000242, Message: "summary is same"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000242, Message: "个人简介未改变"})
 		return
 	}
 	if err := user.UpdateSummary(p.Email, p.Summary); err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000243, Message: "update summary err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000243, Message: "个人简介更新失败"})
 		return
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000240, Message: "update summary succ"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000240, Message: "个人简介更新成功"})
 	return
 }

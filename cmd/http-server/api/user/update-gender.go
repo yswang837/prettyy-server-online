@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
 )
@@ -18,13 +19,13 @@ type updateGenderParams struct {
 func (s *Server) UpdateGender(ctx *gin.Context) {
 	p := &updateGenderParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000220, Message: "bind params err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000220, Message: "参数错误"})
 		return
 	}
 	if err := user.UpdateGender(p.Email, p.Gender); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000221, Message: "update gender err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000221, Message: "更新性别失败"})
 		return
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000220, Message: "update gender succ"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000220, Message: "更新性别成功"})
 	return
 }

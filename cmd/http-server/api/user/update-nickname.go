@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
 )
@@ -18,22 +19,22 @@ type updateNickNameParams struct {
 func (s *Server) UpdateNickName(ctx *gin.Context) {
 	p := &updateNickNameParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000200, Message: "bind params err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000200, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000201, Message: "get user err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000201, Message: "获取用户信息失败"})
 		return
 	}
 	if p.NickName == u.NickName {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000202, Message: "nick name is same"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000202, Message: "昵称未改变"})
 		return
 	}
 	if err := user.UpdateNickName(p.Email, p.NickName); err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000203, Message: "update nick name err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000203, Message: "更新昵称失败"})
 		return
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000200, Message: "update nick name succ"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000200, Message: "更新昵称成功"})
 	return
 }

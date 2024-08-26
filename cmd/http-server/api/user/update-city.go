@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
 )
@@ -19,23 +20,23 @@ type updateProvinceCityParams struct {
 func (s *Server) UpdateProvinceCity(ctx *gin.Context) {
 	p := &updateProvinceCityParams{}
 	if err := ctx.Bind(p); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000260, Message: "bind params err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000260, Message: "参数错误"})
 		return
 	}
 	u, err := user.GetUser(p.Email)
 	if err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000261, Message: "get user err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000261, Message: "获取用户信息失败"})
 		return
 	}
 	pc := p.Province + " / " + p.City
 	if pc == u.ProvinceCity {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000262, Message: "province city is same"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000262, Message: "省市未改变"})
 		return
 	}
 	if err := user.UpdateProvinceCity(p.Email, pc); err != nil {
-		ctx.JSON(200, ginConsulRegister.Response{Code: 4000263, Message: "update province city err"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000263, Message: "更新省市失败"})
 		return
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000260, Message: "update province city succ"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000260, Message: "更新省市成功"})
 	return
 }

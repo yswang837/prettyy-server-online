@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"prettyy-server-online/cmd/http-server/conf"
-	middle_ware "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
+	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
 )
 
 // Server 绑定所有用户相关的服务
@@ -20,7 +20,7 @@ func (s *Server) Init() (err error) {
 
 func (s *Server) SetRoute(r *gin.Engine) {
 	// 需要token认证的路由组
-	groupHandler := r.Group("").Use(middle_ware.JwtAuth())
+	groupHandler := r.Group("").Use(middleWare.JwtAuth())
 	groupHandler.GET(conf.URLLoginOut, func(context *gin.Context) {
 		s.LoginOut(context)
 	})
