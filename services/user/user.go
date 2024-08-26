@@ -168,6 +168,7 @@ func (c *Client) UpdatePassword(email, password string) error {
 	if email == "" || password == "" {
 		return tool.ErrParams
 	}
+	password = tool.ToMd5(password)
 	_, err := c.cacheManager.HSet(email, "password", password)
 	if err != nil {
 		return errors.New("redis update password failed: " + err.Error())

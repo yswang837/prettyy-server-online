@@ -34,26 +34,26 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 	case "1":
 		// 验证码登录/注册
 		if p.IdentifyCode == "" {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000002, Message: "免密方式，验证码为空"})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000002, Message: "验证码为空"}) // 免密方式，验证码为空
 			return
 		}
 		if p.IdentifyCode != user3.GetIdentifyCodeFromCache(p.Email) {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000003, Message: "免密方式，验证码错误"})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000003, Message: "验证码错误"}) //免密方式，验证码错误
 			return
 		}
 	case "2":
 		// 密码登录/注册
 		if p.Password == "" {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000004, Message: "账密方式，密码为空"})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000004, Message: "密码为空"}) //账密方式，密码为空
 			return
 		}
 		if p.IdentifyID == "" || p.IdentifyCode == "" {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000005, Message: "账密方式，验证码为空"})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000005, Message: "验证码为空"}) //账密方式，验证码为空
 			return
 		}
 		if !store.Verify(p.IdentifyID, p.IdentifyCode, true) {
 			// 验证码错误，防爆次数为1，也就是填错了就清空当前的identify_id
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000006, Message: "账密方式，验证码错误"})
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000006, Message: "验证码错误"}) //账密方式，验证码错误
 			return
 		}
 	default:
@@ -95,7 +95,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		case "1":
 			// 走到这里，验证码已匹配，直接更新登录时间
 			if err = user3.UpdateLoginTime(p.Email); err != nil {
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000011, Message: "免密方式，更新登录时间失败"})
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000011, Message: "更新登录时间失败"}) //免密方式，更新登录时间失败
 				return
 			}
 			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
@@ -109,7 +109,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 			if u.Password == tool.ToMd5(p.Password) {
 				// 登录成功更新登录时间
 				if err = user3.UpdateLoginTime(p.Email); err != nil {
-					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000013, Message: "账密方式，更新登录时间失败"})
+					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000013, Message: "更新登录时间失败"}) //账密方式，更新登录时间失败
 					return
 				}
 				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000003, Message: "账密方式，登录成功", Result: result})
