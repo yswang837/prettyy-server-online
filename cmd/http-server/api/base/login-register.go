@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	user2 "prettyy-server-online/data/user"
 	user3 "prettyy-server-online/services/user"
@@ -19,44 +20,44 @@ type loginRegisterParams struct {
 }
 
 // LoginRegister 登录或注册接口，提示用户：如果未注册，那么登录时将自动注册
-// 4000001~4000009
-// 2000001~2000003
+// 4000001
+// 2000001
 // todo 计数和详细日志
 func (s *Server) LoginRegister(ctx *gin.Context) {
 	p := &loginRegisterParams{}
 	var err error
 	if err = ctx.Bind(p); err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000001, Message: "参数错误"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000001, Message: "参数错误"})
 		return
 	}
 	switch p.Method {
 	case "1":
 		// 验证码登录/注册
 		if p.IdentifyCode == "" {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000002, Message: "免密方式，验证码为空"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000002, Message: "免密方式，验证码为空"})
 			return
 		}
 		if p.IdentifyCode != user3.GetIdentifyCodeFromCache(p.Email) {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000003, Message: "免密方式，验证码错误"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000003, Message: "免密方式，验证码错误"})
 			return
 		}
 	case "2":
 		// 密码登录/注册
 		if p.Password == "" {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000004, Message: "密码为空"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000004, Message: "账密方式，密码为空"})
 			return
 		}
 		if p.IdentifyID == "" || p.IdentifyCode == "" {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000005, Message: "账密方式，验证码为空"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000005, Message: "账密方式，验证码为空"})
 			return
 		}
 		if !store.Verify(p.IdentifyID, p.IdentifyCode, true) {
 			// 验证码错误，防爆次数为1，也就是填错了就清空当前的identify_id
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000006, Message: "账密方式，验证码错误"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000006, Message: "账密方式，验证码错误"})
 			return
 		}
 	default:
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
 		return
 	}
 	// 执行到这，两种验证码都通过 或者 账密登录时密码不为空
@@ -64,7 +65,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 	// 生成token，无论注册还是登录均带上token返回
 	token, err := tool.GenerateToken()
 	if err != nil || token == "" {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
 		return
 	}
 	// 检查用户是否已经注册
@@ -73,53 +74,53 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		// 未注册，走注册逻辑
 		user := &user2.User{Email: p.Email, Password: p.Password}
 		if err = user3.Add(user); err != nil {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 			return
 		}
 		user, err := user3.GetUser(p.Email)
 		if err != nil {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
 		}
 		result := map[string]interface{}{"token": token, "user": user}
-		ctx.JSON(200, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
 		return
 	} else {
 		// 已注册，走登录逻辑
 		user, err := user3.GetUser(p.Email)
 		if err != nil {
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
 		}
 		result := map[string]interface{}{"token": token, "user": user}
 		switch p.Method {
 		case "1":
 			// 走到这里，验证码已匹配，直接更新登录时间
 			if err = user3.UpdateLoginTime(p.Email); err != nil {
-				ctx.JSON(400, ginConsulRegister.Response{Code: 4000011, Message: "免密方式，更新登录时间失败"})
+				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000011, Message: "免密方式，更新登录时间失败"})
 				return
 			}
-			ctx.JSON(200, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
 			return
 		case "2":
 			if u.Password == "" {
 				// 用户通过验证码注册的，从而未设置密码(数据库中密码为空)，而登录的时候走了密码登录
-				ctx.JSON(400, ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})
+				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})
 				return
 			}
 			if u.Password == tool.ToMd5(p.Password) {
 				// 登录成功更新登录时间
 				if err = user3.UpdateLoginTime(p.Email); err != nil {
-					ctx.JSON(400, ginConsulRegister.Response{Code: 4000013, Message: "账密方式，更新登录时间失败"})
+					ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000013, Message: "账密方式，更新登录时间失败"})
 					return
 				}
-				ctx.JSON(200, ginConsulRegister.Response{Code: 2000003, Message: "账密方式，登录成功", Result: result})
+				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000003, Message: "账密方式，登录成功", Result: result})
 				return
 			} else {
 				// 用户输入的密码有误
-				ctx.JSON(400, ginConsulRegister.Response{Code: 4000014, Message: "邮箱或者密码错误"})
+				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000014, Message: "邮箱或者密码错误"})
 				return
 			}
 		default:
-			ctx.JSON(400, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
 			return
 		}
 	}

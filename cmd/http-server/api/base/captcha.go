@@ -3,6 +3,7 @@ package base
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
+	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 )
 
@@ -22,7 +23,7 @@ func (s *Server) GetIdentifyCode(ctx *gin.Context) {
 	cp := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
-		ctx.JSON(400, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败"})
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败"})
 		return
 	}
 	resp := &captchaResponse{
@@ -30,6 +31,6 @@ func (s *Server) GetIdentifyCode(ctx *gin.Context) {
 		PicPath:       b64s,
 		CaptchaLength: 6,
 	}
-	ctx.JSON(200, ginConsulRegister.Response{Code: 2000100, Message: "生成验证码成功", Result: resp})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000100, Message: "生成验证码成功", Result: resp})
 	return
 }
