@@ -41,10 +41,10 @@ var (
 func Auth(ginCtx *gin.Context) {
 	ctx := ginConsulRegister.NewContext(ginCtx)
 	// 开发业务代码阶段，可以临时注释一下
-	if !auth(ctx) {
-		ctx.Abort()
-		return
-	}
+	//if !auth(ctx) {
+	//	ctx.Abort()
+	//	return
+	//}
 	ctx.Next()
 }
 
