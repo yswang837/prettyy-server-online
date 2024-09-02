@@ -285,7 +285,7 @@ func (c *Client) Incr(key string) (int64, error) {
 
 // SetExByEmail set邮箱验证码并设置5分钟过期
 func SetExByEmail(email, value string) error {
-	return defaultClient.SetEx(buildIdentifyCode(email), value, identifyCodeExpire)
+	return defaultClient.SetEx(email, value, identifyCodeExpire)
 }
 
 func SetExByToken(token string) error {
@@ -311,9 +311,5 @@ func (c *Client) GetIdentifyCodeFromCache(email string) string {
 
 // GetIdentifyCodeFromCache 通过email获取验证码
 func GetIdentifyCodeFromCache(email string) string {
-	return defaultClient.GetIdentifyCodeFromCache(buildIdentifyCode(email))
-}
-
-func buildIdentifyCode(email string) string {
-	return email + ":code"
+	return defaultClient.GetIdentifyCodeFromCache(email)
 }
