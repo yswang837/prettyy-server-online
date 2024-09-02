@@ -68,7 +68,7 @@
 
 **todo**
 
-6、生成user_0,user_1表,reversed_index_0,reversed_index_1表
+6、生成user_0,user_1表,inverted_index_0,inverted_index_1表
 
 ```sql
 CREATE TABLE `user_0` (
@@ -95,6 +95,14 @@ CREATE TABLE `user_0` (
   UNIQUE (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
+CREATE TABLE `inverted_index_0` (
+  `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
+  `number` varchar(8) NOT NULL DEFAULT '' COMMENT 'number',
+  `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
+  `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
+  PRIMARY KEY (`attr_value`,`number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
+
 CREATE TABLE `article_0` (
    `aid` varchar(32) NOT NULL DEFAULT '' COMMENT 'article id',
    `title` varchar(128) NOT NULL DEFAULT '' COMMENT 'title',
@@ -109,17 +117,9 @@ CREATE TABLE `article_0` (
    `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
     PRIMARY KEY (`aid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
-
-CREATE TABLE `reversed_index_0` (
-  `rid` varchar(50) NOT NULL COMMENT 'reversed index id',
-  `email` varchar(64) NOT NULL UNIQUE DEFAULT '' COMMENT 'email',
-  `phone` varchar(11) NOT NULL DEFAULT '' COMMENT 'phone number',
-  `uid` varchar(50) NOT NULL COMMENT 'user id',
-  `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
-  `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
-  PRIMARY KEY (`rid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 ```
+
+
 
 
 
