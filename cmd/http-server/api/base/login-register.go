@@ -118,7 +118,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 			}
 			if user.Password == tool.ToMd5(p.Password) {
 				// 登录成功更新登录时间
-				if err = user3.UpdateLoginTime(p.Email); err != nil {
+				if err = user3.UpdateLoginTime(strconv.FormatInt(user.Uid, 10)); err != nil {
 					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000013, Message: "更新登录时间失败"}) //账密方式，更新登录时间失败
 					return
 				}
