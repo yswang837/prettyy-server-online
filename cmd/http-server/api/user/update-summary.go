@@ -9,7 +9,7 @@ import (
 
 // updateNickNameParams 面向接口
 type updateSummaryParams struct {
-	Uid     string `json:"email" form:"email" binding:"required"`
+	Uid     string `json:"uid" form:"uid" binding:"required"`
 	Summary string `json:"summary" form:"summary" binding:"required"`
 }
 
