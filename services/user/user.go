@@ -47,17 +47,17 @@ func NewClient() (*Client, error) {
 	return &Client{manager: manager, cacheManager: cache}, nil
 }
 
-func Add(u *user.User) (err error) {
+func Add(u *user.User) (user *user.User, err error) {
 	return defaultClient.Add(u)
 }
 
-func (c *Client) Add(u *user.User) (err error) {
+func (c *Client) Add(u *user.User) (userObj *user.User, err error) {
 	if u == nil {
-		return tool.ErrParams
+		return nil, tool.ErrParams
 	}
 	u.Uid, err = c.Incr(uidIncrKey)
 	if err != nil {
-		return errors.New("generate uid err: " + err.Error())
+		return nil, errors.New("generate uid err: " + err.Error())
 	}
 	if u.Password != "" {
 		u.Password = tool.ToMd5(u.Password)
@@ -69,14 +69,14 @@ func (c *Client) Add(u *user.User) (err error) {
 	u.Gender = gender
 	u.DataIntegrity = dataIntegrity
 	u.NickName = strings.Split(u.Email, "@")[0] // 默认用户名用邮箱前缀代替
-	if err = c.manager.Add(u); err != nil {
-		return errors.New("register to mysql failed: " + err.Error())
+	if userObj, err = c.manager.Add(u); err != nil {
+		return nil, errors.New("register to mysql failed: " + err.Error())
 	}
 	u.CreateTime = time.Now()
 	u.UpdateTime = time.Now()
 	u.LoginTime = time.Now()
 	if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), userToMap(u)); err != nil {
-		return errors.New("register to redis failed: " + err.Error())
+		return nil, errors.New("register to redis failed: " + err.Error())
 	}
 	return
 }

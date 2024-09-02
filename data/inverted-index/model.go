@@ -1,4 +1,4 @@
-package user
+package inverted_index
 
 import (
 	"encoding/json"

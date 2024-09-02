@@ -4,9 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
+	invertedIndex "prettyy-server-online/data/inverted-index"
 	user2 "prettyy-server-online/data/user"
+	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	user3 "prettyy-server-online/services/user"
 	"prettyy-server-online/utils/tool"
+	"strconv"
 )
 
 // loginRegisterParams 面向接口
@@ -19,7 +22,7 @@ type loginRegisterParams struct {
 	IdentifyID string `json:"identify_id" form:"identify_id"` // 验证码ID：仅账密登录时需要验证码ID
 }
 
-// LoginRegister 登录或注册接口，提示用户：如果未注册，那么登录时将自动注册
+// LoginRegister 登录或注册接口，提示用户：如果未注册，那么登录时将自动注册。接口返回的登录时间，是上一次登录的时间
 // 4000001
 // 2000001
 // todo 计数和详细日志
@@ -68,45 +71,52 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
 		return
 	}
-	// 检查用户是否已经注册
-	u, _ := user3.GetUser(p.Email)
-	if u == nil {
+	// 检查用户是否已经注册，通过Email检查反向索引库，如果存在，则已注册，否则未注册
+	i, _ := invertedIndex2.Get(p.Email, "1")
+	//u, _ := user3.GetUser(p.Email)
+	if i == nil {
 		// 未注册，走注册逻辑
 		user := &user2.User{Email: p.Email, Password: p.Password}
-		if err = user3.Add(user); err != nil {
+		userObj, err := user3.Add(user)
+		if err == nil {
+			// 添加反向索引
+			invertedObj := &invertedIndex.InvertedIndex{AttrValue: p.Email, Number: "1", Uid: userObj.Uid}
+			if err = invertedIndex2.Add(invertedObj); err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
+				return
+			}
+		} else {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 			return
 		}
-		user, err := user3.GetUser(p.Email)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
-		}
-		result := map[string]interface{}{"token": token, "user": user}
+		result := map[string]interface{}{"token": token, "user": userObj}
 		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
 		return
 	} else {
 		// 已注册，走登录逻辑
-		user, err := user3.GetUser(p.Email)
+		user, err := user3.GetUser(strconv.FormatInt(i.Uid, 10))
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
+			return
 		}
 		result := map[string]interface{}{"token": token, "user": user}
 		switch p.Method {
 		case "1":
 			// 走到这里，验证码已匹配，直接更新登录时间
-			if err = user3.UpdateLoginTime(p.Email); err != nil {
+			if err = user3.UpdateLoginTime(strconv.FormatInt(user.Uid, 10)); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000011, Message: "更新登录时间失败"}) //免密方式，更新登录时间失败
 				return
 			}
 			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
 			return
 		case "2":
-			if u.Password == "" {
+
+			if user.Password == "" {
 				// 用户通过验证码注册的，从而未设置密码(数据库中密码为空)，而登录的时候走了密码登录
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})
 				return
 			}
-			if u.Password == tool.ToMd5(p.Password) {
+			if user.Password == tool.ToMd5(p.Password) {
 				// 登录成功更新登录时间
 				if err = user3.UpdateLoginTime(p.Email); err != nil {
 					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000013, Message: "更新登录时间失败"}) //账密方式，更新登录时间失败

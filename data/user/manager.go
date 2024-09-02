@@ -26,16 +26,16 @@ func NewManager() (*Manager, error) {
 	return &Manager{client: client}, nil
 }
 
-func (m *Manager) Add(u *User) error {
+func (m *Manager) Add(u *User) (*User, error) {
 	if u == nil || u.Uid == 0 || (u.Email == "" && u.Phone == "") {
-		return tool.ErrParams
+		return nil, tool.ErrParams
 	}
 	now := time.Now()
-	u.CreateTime, u.UpdateTime = now, now
+	u.CreateTime, u.UpdateTime, u.LoginTime = now, now, now
 	if err := m.master(strconv.FormatInt(u.Uid, 10)).Create(u).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return m.Get(strconv.FormatInt(u.Uid, 10))
 }
 
 func (m *Manager) Get(uid string) (*User, error) {
