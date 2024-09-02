@@ -274,8 +274,8 @@ func GetUser(uid string) (*user.User, error) {
 	return defaultClient.GetUser(uid)
 }
 
-func (c *Client) SetEx(uid string, value string, expire int) error {
-	_, err := c.cacheManager.SetWithTTL(uid, expire, value)
+func (c *Client) SetEx(key string, value string, expire int) error {
+	_, err := c.cacheManager.SetWithTTL(key, expire, value)
 	return err
 }
 
