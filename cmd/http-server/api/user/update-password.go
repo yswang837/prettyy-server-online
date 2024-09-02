@@ -9,7 +9,7 @@ import (
 
 // updatePasswordParams 面向接口
 type updatePasswordParams struct {
-	Email    string `json:"email" form:"email" binding:"required"`
+	Uid      string `json:"uid" form:"uid" binding:"required"`
 	Password string `json:"password" form:"password" binding:"required"`
 }
 
@@ -27,7 +27,7 @@ func (s *Server) UpdatePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000301, Message: "密码长度必须在6~20个字符"})
 		return
 	}
-	u, err := user.GetUser(p.Email)
+	u, err := user.GetUser(p.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000302, Message: "获取用户信息失败"})
 		return
@@ -38,7 +38,7 @@ func (s *Server) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 	// 要么是库中密码为空，要么是密码不同，均可以直接更新密码，binding required 已经保证了密码不为空
-	if err = user.UpdatePassword(p.Email, p.Password); err != nil {
+	if err = user.UpdatePassword(p.Uid, p.Password); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000304, Message: "密码更新失败"})
 		return
 	}

@@ -9,7 +9,7 @@ import (
 
 // checkPasswordParams 面向接口
 type checkPasswordParams struct {
-	Email string `json:"email" form:"email" binding:"required"`
+	Uid string `json:"uid" form:"uid" binding:"required"`
 }
 
 // CheckPassword 检查密码是否为空，为空则在用户通过验证码登录后提示用户
@@ -21,7 +21,7 @@ func (s *Server) CheckPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})
 		return
 	}
-	u, err := user.GetUser(p.Email)
+	u, err := user.GetUser(p.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000021, Message: "获取用户信息失败"})
 		return

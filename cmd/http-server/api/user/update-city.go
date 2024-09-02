@@ -9,7 +9,7 @@ import (
 
 // updateProvinceCityParams 面向接口
 type updateProvinceCityParams struct {
-	Email    string `json:"email" form:"email" binding:"required"`
+	Uid      string `json:"uid" form:"uid" binding:"required"`
 	Province string `json:"province" form:"province" binding:"required"`
 	City     string `json:"city" form:"city" binding:"required"`
 }
@@ -23,7 +23,7 @@ func (s *Server) UpdateProvinceCity(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000260, Message: "参数错误"})
 		return
 	}
-	u, err := user.GetUser(p.Email)
+	u, err := user.GetUser(p.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000261, Message: "获取用户信息失败"})
 		return
@@ -33,7 +33,7 @@ func (s *Server) UpdateProvinceCity(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000262, Message: "省市未改变"})
 		return
 	}
-	if err := user.UpdateProvinceCity(p.Email, pc); err != nil {
+	if err = user.UpdateProvinceCity(p.Uid, pc); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000263, Message: "更新省市失败"})
 		return
 	}

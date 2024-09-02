@@ -9,7 +9,7 @@ import (
 
 // updateGenderParams 面向接口
 type updateGenderParams struct {
-	Email  string `json:"email" form:"email" binding:"required"`
+	Uid    string `json:"uid" form:"uid" binding:"required"`
 	Gender string `json:"gender" form:"gender" binding:"required"`
 }
 
@@ -22,7 +22,7 @@ func (s *Server) UpdateGender(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000220, Message: "参数错误"})
 		return
 	}
-	if err := user.UpdateGender(p.Email, p.Gender); err != nil {
+	if err := user.UpdateGender(p.Uid, p.Gender); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000221, Message: "更新性别失败"})
 		return
 	}

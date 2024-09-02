@@ -9,7 +9,7 @@ import (
 
 // updateBirthdayParams 面向接口
 type updateBirthdayParams struct {
-	Email    string `json:"email" form:"email" binding:"required"`
+	Uid      string `json:"uid" form:"uid" binding:"required"`
 	Birthday string `json:"birthday" form:"birthday" binding:"required"`
 }
 
@@ -22,7 +22,7 @@ func (s *Server) UpdateBirthday(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})
 		return
 	}
-	u, err := user.GetUser(p.Email)
+	u, err := user.GetUser(p.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000281, Message: "获取用户信息失败"})
 		return
@@ -31,7 +31,7 @@ func (s *Server) UpdateBirthday(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000282, Message: "生日未改变"})
 		return
 	}
-	if err := user.UpdateBirthdayCity(p.Email, p.Birthday); err != nil {
+	if err = user.UpdateBirthdayCity(p.Uid, p.Birthday); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000283, Message: "更新生日失败"})
 		return
 	}

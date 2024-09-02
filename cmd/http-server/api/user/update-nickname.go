@@ -9,7 +9,7 @@ import (
 
 // updateNickNameParams 面向接口
 type updateNickNameParams struct {
-	Email    string `json:"email" form:"email" binding:"required"`
+	Uid      string `json:"uid" form:"uid" binding:"required"`
 	NickName string `json:"nick_name" form:"nick_name" binding:"required"`
 }
 
@@ -22,7 +22,7 @@ func (s *Server) UpdateNickName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000200, Message: "参数错误"})
 		return
 	}
-	u, err := user.GetUser(p.Email)
+	u, err := user.GetUser(p.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000201, Message: "获取用户信息失败"})
 		return
@@ -31,7 +31,7 @@ func (s *Server) UpdateNickName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000202, Message: "昵称未改变"})
 		return
 	}
-	if err := user.UpdateNickName(p.Email, p.NickName); err != nil {
+	if err = user.UpdateNickName(p.Uid, p.NickName); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000203, Message: "更新昵称失败"})
 		return
 	}
