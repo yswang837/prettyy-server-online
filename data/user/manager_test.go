@@ -10,5 +10,5 @@ func TestNewManager(t *testing.T) {
 	manager, err := NewManager()
 	assert.Equal(t, nil, err)
 	fmt.Printf("%+v\n", manager.client)
-	manager.Add(&User{Uid: 11111})
+	_ = manager.Add(&User{Uid: 11111})
 }

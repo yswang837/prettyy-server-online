@@ -73,7 +73,7 @@
 ```sql
 CREATE TABLE `user_0` (
   `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
-  `email` varchar(64) NOT NULL UNIQUE DEFAULT '' COMMENT 'email',
+  `email` varchar(64) NOT NULL DEFAULT '' COMMENT 'email',
   `password` varchar(32) NOT NULL DEFAULT '' COMMENT 'password',
   `phone` varchar(11) NOT NULL DEFAULT '' COMMENT 'phone number',
   `nick_name` varchar(32) NOT NULL DEFAULT '' COMMENT 'nick name',
