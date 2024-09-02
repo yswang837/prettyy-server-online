@@ -27,6 +27,14 @@ type Client struct {
 
 var defaultClient *Client
 
+func init() {
+	var err error
+	defaultClient, err = NewClient()
+	if err != nil {
+		panic(err)
+	}
+}
+
 func NewClient() (*Client, error) {
 	manager, err := user.NewManager()
 	if err != nil {
@@ -37,6 +45,10 @@ func NewClient() (*Client, error) {
 		return nil, err
 	}
 	return &Client{manager: manager, cacheManager: cache}, nil
+}
+
+func Add(u *user.User) (err error) {
+	return defaultClient.Add(u)
 }
 
 func (c *Client) Add(u *user.User) (err error) {
@@ -63,7 +75,7 @@ func (c *Client) Add(u *user.User) (err error) {
 	u.CreateTime = time.Now()
 	u.UpdateTime = time.Now()
 	u.LoginTime = time.Now()
-	if _, err = c.cacheManager.HMSet(u.Email, userToMap(u)); err != nil {
+	if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), userToMap(u)); err != nil {
 		return errors.New("register to redis failed: " + err.Error())
 	}
 	return
@@ -123,15 +135,11 @@ func mapToUser(m map[string]string) *user.User {
 	return u
 }
 
-func Add(u *user.User) (err error) {
-	return defaultClient.Add(u)
-}
-
-func (c *Client) GetUser(email string) (*user.User, error) {
-	if email == "" {
+func (c *Client) GetUser(uid string) (*user.User, error) {
+	if uid == "" {
 		return nil, tool.ErrParams
 	}
-	m, err := c.cacheManager.HGetAll(email)
+	m, err := c.cacheManager.HGetAll(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -142,132 +150,132 @@ func (c *Client) GetUser(email string) (*user.User, error) {
 			return u, nil
 		}
 	}
-	u, err = c.manager.Get(email)
+	u, err = c.manager.Get(uid)
 	if err != nil {
 		return nil, err
 	}
 	return u, nil
 }
 
-func (c *Client) UpdateLoginTime(email string) error {
-	if email == "" {
+func UpdateLoginTime(uid string) error {
+	return defaultClient.UpdateLoginTime(uid)
+}
+
+func (c *Client) UpdateLoginTime(uid string) error {
+	if uid == "" {
 		return tool.ErrParams
 	}
-	_, err := c.cacheManager.HSet(email, "login_time", time.Now().Format(tool.DefaultDateTimeLayout))
+	_, err := c.cacheManager.HSet(uid, "login_time", time.Now().Format(tool.DefaultDateTimeLayout))
 	if err != nil {
 		return errors.New("redis update login time failed: " + err.Error())
 	}
-	return c.manager.UpdateLoginTime(email)
+	return c.manager.UpdateLoginTime(uid)
 }
 
-func UpdateLoginTime(email string) error {
-	return defaultClient.UpdateLoginTime(email)
+func UpdatePassword(uid, password string) error {
+	return defaultClient.UpdatePassword(uid, password)
 }
 
-func (c *Client) UpdatePassword(email, password string) error {
-	if email == "" || password == "" {
+func (c *Client) UpdatePassword(uid, password string) error {
+	if uid == "" || password == "" {
 		return tool.ErrParams
 	}
 	password = tool.ToMd5(password)
-	_, err := c.cacheManager.HSet(email, "password", password)
+	_, err := c.cacheManager.HSet(uid, "password", password)
 	if err != nil {
 		return errors.New("redis update password failed: " + err.Error())
 	}
-	return c.manager.UpdatePassword(email, password)
+	return c.manager.UpdatePassword(uid, password)
 }
 
-func UpdatePassword(email, password string) error {
-	return defaultClient.UpdatePassword(email, password)
+func UpdateNickName(uid, nickName string) error {
+	return defaultClient.UpdateNickName(uid, nickName)
 }
 
-func UpdateNickName(email, nickName string) error {
-	return defaultClient.UpdateNickName(email, nickName)
-}
-
-func (c *Client) UpdateNickName(email, nickName string) error {
-	if email == "" || nickName == "" {
+func (c *Client) UpdateNickName(uid, nickName string) error {
+	if uid == "" || nickName == "" {
 		return tool.ErrParams
 	}
-	_, err := c.cacheManager.HSet(email, "nick_name", nickName)
+	_, err := c.cacheManager.HSet(uid, "nick_name", nickName)
 	if err != nil {
 		return errors.New("redis update nick name failed: " + err.Error())
 	}
-	return c.manager.UpdateNickName(email, nickName)
+	return c.manager.UpdateNickName(uid, nickName)
 }
 
-func UpdateSummary(email, summary string) error {
-	return defaultClient.UpdateSummary(email, summary)
+func UpdateSummary(uid, summary string) error {
+	return defaultClient.UpdateSummary(uid, summary)
 }
 
-func UpdateProvinceCity(email, provinceCity string) error {
-	return defaultClient.UpdateProvinceCity(email, provinceCity)
-}
-
-func UpdateBirthdayCity(email, birthday string) error {
-	return defaultClient.UpdateBirthdayCity(email, birthday)
-}
-
-func (c *Client) UpdateBirthdayCity(email, birthday string) error {
-	if email == "" || birthday == "" {
+func (c *Client) UpdateSummary(uid, summary string) error {
+	if uid == "" || summary == "" {
 		return tool.ErrParams
 	}
-	_, err := c.cacheManager.HSet(email, "birthday", birthday)
-	if err != nil {
-		return errors.New("redis update birthday failed: " + err.Error())
-	}
-	return c.manager.UpdateBirthdayCity(email, birthday)
-}
-
-func (c *Client) UpdateProvinceCity(email, UpdateProvinceCity string) error {
-	if email == "" || UpdateProvinceCity == "" {
-		return tool.ErrParams
-	}
-	_, err := c.cacheManager.HSet(email, "province_city", UpdateProvinceCity)
-	if err != nil {
-		return errors.New("redis update province_city failed: " + err.Error())
-	}
-	return c.manager.UpdateProvinceCity(email, UpdateProvinceCity)
-}
-
-func (c *Client) UpdateSummary(email, summary string) error {
-	if email == "" || summary == "" {
-		return tool.ErrParams
-	}
-	_, err := c.cacheManager.HSet(email, "summary", summary)
+	_, err := c.cacheManager.HSet(uid, "summary", summary)
 	if err != nil {
 		return errors.New("redis update summary failed: " + err.Error())
 	}
-	return c.manager.UpdateSummary(email, summary)
+	return c.manager.UpdateSummary(uid, summary)
 }
 
-func UpdateGender(email, gender string) error {
-	return defaultClient.UpdateGender(email, gender)
+func UpdateProvinceCity(uid, provinceCity string) error {
+	return defaultClient.UpdateProvinceCity(uid, provinceCity)
 }
 
-func (c *Client) UpdateGender(email, g string) error {
-	if email == "" || g == gender || g == "" {
+func (c *Client) UpdateProvinceCity(uid, UpdateProvinceCity string) error {
+	if uid == "" || UpdateProvinceCity == "" {
 		return tool.ErrParams
 	}
-	u, err := c.GetUser(email)
+	_, err := c.cacheManager.HSet(uid, "province_city", UpdateProvinceCity)
+	if err != nil {
+		return errors.New("redis update province_city failed: " + err.Error())
+	}
+	return c.manager.UpdateProvinceCity(uid, UpdateProvinceCity)
+}
+
+func UpdateBirthdayCity(uid, birthday string) error {
+	return defaultClient.UpdateBirthdayCity(uid, birthday)
+}
+
+func (c *Client) UpdateBirthdayCity(uid, birthday string) error {
+	if uid == "" || birthday == "" {
+		return tool.ErrParams
+	}
+	_, err := c.cacheManager.HSet(uid, "birthday", birthday)
+	if err != nil {
+		return errors.New("redis update birthday failed: " + err.Error())
+	}
+	return c.manager.UpdateBirthdayCity(uid, birthday)
+}
+
+func UpdateGender(uid, gender string) error {
+	return defaultClient.UpdateGender(uid, gender)
+}
+
+func (c *Client) UpdateGender(uid, g string) error {
+	if uid == "" || g == gender || g == "" {
+		return tool.ErrParams
+	}
+	u, err := c.GetUser(uid)
 	if err != nil {
 		return errors.New("update gender get user failed: " + err.Error())
 	}
 	if u.Gender == "男" || u.Gender == "女" {
 		return errors.New("can not change gender")
 	}
-	_, err = c.cacheManager.HSet(email, "gender", g)
+	_, err = c.cacheManager.HSet(uid, "gender", g)
 	if err != nil {
 		return errors.New("redis update gender failed: " + err.Error())
 	}
-	return c.manager.UpdateGender(email, g)
+	return c.manager.UpdateGender(uid, g)
 }
 
-func GetUser(email string) (*user.User, error) {
-	return defaultClient.GetUser(email)
+func GetUser(uid string) (*user.User, error) {
+	return defaultClient.GetUser(uid)
 }
 
-func (c *Client) SetEx(email string, value string, expire int) error {
-	_, err := c.cacheManager.SetWithTTL(email, expire, value)
+func (c *Client) SetEx(uid string, value string, expire int) error {
+	_, err := c.cacheManager.SetWithTTL(uid, expire, value)
 	return err
 }
 
@@ -308,16 +316,4 @@ func GetIdentifyCodeFromCache(email string) string {
 
 func buildIdentifyCode(email string) string {
 	return email + ":code"
-}
-
-func init() {
-	var err error
-	defaultClient, err = NewClient()
-	if err != nil {
-		panic(err)
-	}
-	//已改为用redis自增key的方式来生成uid
-	//if err = xzfSnowflake.Init("2024-03-09", "1"); err != nil {
-	//	panic(err)
-	//}
 }
