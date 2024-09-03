@@ -54,9 +54,12 @@ func (m *Manager) Get(aid string) (*Article, error) {
 }
 
 // GetArticleList 简单查询则参数传递对应类型的零值，也支持分页查询
-func (m *Manager) GetArticleList(page, pageSize int) (art []*Article, err error) {
+func (m *Manager) GetArticleList(uid int64, page, pageSize int) (art []*Article, err error) {
 	art = []*Article{}
 	db := m.slave(strconv.Itoa(rand.Intn(100))) // 随机从从库中找一个表获取数据，它不是aid
+	if uid >= 10000 {
+		db.Scopes(withUid(strconv.FormatInt(uid, 10)))
+	}
 	if pageSize > 0 {
 		db.Limit(pageSize)
 	} else {
@@ -110,5 +113,11 @@ func selectTable(aid string) func(tx *gorm.DB) *gorm.DB {
 func withAid(aid string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
 		return tx.Where("aid = ?", aid)
+	}
+}
+
+func withUid(uid string) func(tx *gorm.DB) *gorm.DB {
+	return func(tx *gorm.DB) *gorm.DB {
+		return tx.Where("uid = ?", uid)
 	}
 }
