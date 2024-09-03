@@ -14,7 +14,7 @@ import (
 // 2000180
 
 type articleListParams struct {
-	Uid      int64 `json:"uid" form:"uid"`                      // uid如果合法，则返回的是当前用户的文章，否则返回的是首页文章的列表
+	Uid      int64 `json:"uid" form:"uid"`                      // uid 如果合法，则返回的是当前用户的文章列表，否则返回的是首页文章的列表
 	Page     int   `json:"page" form:"page" binding:"required"` // 第几页
 	PageSize int   `json:"page_size" form:"page_size"`          // 每页多少条
 }

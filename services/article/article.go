@@ -2,7 +2,7 @@ package article
 
 import (
 	"errors"
-	xzf_snowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
+	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	"prettyy-server-online/data/article"
 	"prettyy-server-online/utils/tool"
 	"strconv"
@@ -32,7 +32,7 @@ func (c *Client) Add(a *article.Article) (err error) {
 	if a == nil {
 		return tool.ErrParams
 	}
-	a.Aid = xzf_snowflake.GenID("AA")
+	a.Aid = xzfSnowflake.GenID("AA")
 	if err = c.manager.Add(a); err != nil {
 		return errors.New("add article to mysql failed: " + err.Error())
 	}
@@ -131,7 +131,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if err = xzf_snowflake.Init("2024-03-09", "1"); err != nil {
+	if err = xzfSnowflake.Init("2024-03-09", "1"); err != nil {
 		panic(err)
 	}
 }
