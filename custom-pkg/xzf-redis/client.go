@@ -62,7 +62,7 @@ func (c *Client) HSet(key string, field string, value string) (int64, error) {
 }
 
 func (c *Client) Del(key string) (uint64, error) {
-	return redis.Uint64(c.Pool.Get().Do(key, "DEL", key))
+	return redis.Uint64(c.Pool.Get().Do("DEL", key))
 }
 
 func (c *Client) HGetAll(key string) (map[string]string, error) {

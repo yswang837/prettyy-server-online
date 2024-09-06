@@ -83,7 +83,7 @@ func (m *Manager) Delete(aid string, uid int64) error {
 	if aid == "" {
 		return tool.ErrParams
 	}
-	a := &Article{}
+	a := &Article{Aid: aid, Uid: uid}
 	if err := m.master(aid).Scopes(withAid(aid), withUid(strconv.FormatInt(uid, 10))).Delete(a).Error; err != nil {
 		return err
 	}
