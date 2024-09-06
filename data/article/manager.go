@@ -53,17 +53,23 @@ func (m *Manager) Get(aid string) (*Article, error) {
 	return a, nil
 }
 
-// GetArticleList 简单查询则参数传递对应类型的零值，也支持分页查询
-func (m *Manager) GetArticleList(uid int64, page, pageSize int) (art []*Article, err error) {
+// GetArticleList 简单查询则参数传递对应类型的零值，也支持分页查询，也支持条件查询
+func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ string) (art []*Article, err error) {
 	art = []*Article{}
 	db := m.slave(strconv.Itoa(rand.Intn(100))) // 随机从从库中找一个表获取数据，它不是aid
 	if uid >= 10000 {
 		db.Scopes(withUid(strconv.FormatInt(uid, 10)))
 	}
+	if visibility != "" {
+		db.Scopes(withVisibility(visibility))
+	}
+	if typ != "" {
+		db.Scopes(withTyp(typ))
+	}
 	if pageSize > 0 {
 		db.Limit(pageSize)
 	} else {
-		db.Limit(50)
+		db.Limit(20)
 	}
 	offset := 0
 	if page > 1 && pageSize > 0 {
@@ -72,7 +78,6 @@ func (m *Manager) GetArticleList(uid int64, page, pageSize int) (art []*Article,
 	if err = db.Offset(offset).Find(&art).Error; err != nil {
 		return nil, err
 	}
-
 	if len(art) == 0 {
 		return nil, errors.New("record not found")
 	}
@@ -119,5 +124,17 @@ func withAid(aid string) func(tx *gorm.DB) *gorm.DB {
 func withUid(uid string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
 		return tx.Where("uid = ?", uid)
+	}
+}
+
+func withVisibility(visibility string) func(tx *gorm.DB) *gorm.DB {
+	return func(tx *gorm.DB) *gorm.DB {
+		return tx.Where("visibility = ?", visibility)
+	}
+}
+
+func withTyp(tpy string) func(tx *gorm.DB) *gorm.DB {
+	return func(tx *gorm.DB) *gorm.DB {
+		return tx.Where("typ = ?", tpy)
 	}
 }

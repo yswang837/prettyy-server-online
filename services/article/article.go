@@ -67,12 +67,12 @@ func Get(aid string) (*article.Article, error) {
 	return defaultClient.Get(aid)
 }
 
-func GetArticleList(uid int64, page, pageSize int) ([]*article.Article, error) {
-	return defaultClient.GetArticleList(uid, page, pageSize)
+func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, error) {
+	return defaultClient.GetArticleList(uid, page, pageSize, visibility, typ)
 }
 
-func (c *Client) GetArticleList(uid int64, page, pageSize int) ([]*article.Article, error) {
-	articleList, err := c.manager.GetArticleList(uid, page, pageSize)
+func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, error) {
+	articleList, err := c.manager.GetArticleList(uid, page, pageSize, visibility, typ)
 	if err != nil {
 		return nil, errors.New("get article list from mysql failed: " + err.Error())
 	}
