@@ -125,6 +125,23 @@ func Add(a *article.Article) (err error) {
 	return defaultClient.Add(a)
 }
 
+func Delete(aid string, uid int64) (err error) {
+	return defaultClient.Delete(aid, uid)
+}
+
+func (c *Client) Delete(aid string, uid int64) (err error) {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	if err = c.manager.Delete(aid, uid); err != nil {
+		return errors.New("del article from mysql failed: " + err.Error())
+	}
+	if _, err = c.cacheManager.Del(aid); err != nil {
+		return errors.New("del article from redis failed: " + err.Error())
+	}
+	return nil
+}
+
 func init() {
 	var err error
 	defaultClient, err = NewClient()

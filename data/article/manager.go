@@ -79,12 +79,12 @@ func (m *Manager) GetArticleList(uid int64, page, pageSize int) (art []*Article,
 	return
 }
 
-func (m *Manager) Delete(aid string) error {
+func (m *Manager) Delete(aid string, uid int64) error {
 	if aid == "" {
 		return tool.ErrParams
 	}
 	a := &Article{}
-	if err := m.master(aid).Scopes(withAid(aid)).Delete(a).Error; err != nil {
+	if err := m.master(aid).Scopes(withAid(aid), withUid(strconv.FormatInt(uid, 10))).Delete(a).Error; err != nil {
 		return err
 	}
 	return nil

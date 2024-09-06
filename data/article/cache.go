@@ -23,6 +23,10 @@ func (ms *ManagerRedis) HMSet(key string, fieldsValues map[string]interface{}) (
 	return ms.redis.HMSet(key, fieldsValues)
 }
 
+func (ms *ManagerRedis) Del(key string) (uint64, error) {
+	return ms.redis.Del(key)
+}
+
 func (ms *ManagerRedis) HGetAll(key string) (map[string]string, error) {
 	return ms.redis.HGetAll(key)
 }

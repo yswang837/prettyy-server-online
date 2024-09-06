@@ -31,4 +31,7 @@ func (s *Server) SetRoute(r *gin.Engine) {
 	groupHandler.POST(conf.URLPublishArticle, func(context *gin.Context) {
 		s.PublishArticle(context)
 	})
+	groupHandler.POST(conf.URLDelArticle, func(context *gin.Context) {
+		s.DelArticle(context)
+	})
 }
