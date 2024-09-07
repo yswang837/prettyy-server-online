@@ -33,6 +33,12 @@ func (c *Client) Add(a *article.Article) (err error) {
 		return tool.ErrParams
 	}
 	a.Aid = xzfSnowflake.GenID("AA")
+	if a.Visibility == "" {
+		a.Visibility = "1"
+	}
+	if a.Typ == "" {
+		a.Typ = "1"
+	}
 	if err = c.manager.Add(a); err != nil {
 		return errors.New("add article to mysql failed: " + err.Error())
 	}
@@ -67,19 +73,19 @@ func Get(aid string) (*article.Article, error) {
 	return defaultClient.Get(aid)
 }
 
-func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, error) {
+func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, int64, error) {
 	return defaultClient.GetArticleList(uid, page, pageSize, visibility, typ)
 }
 
-func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, error) {
-	articleList, err := c.manager.GetArticleList(uid, page, pageSize, visibility, typ)
+func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, int64, error) {
+	articleList, count, err := c.manager.GetArticleList(uid, page, pageSize, visibility, typ)
 	if err != nil {
-		return nil, errors.New("get article list from mysql failed: " + err.Error())
+		return nil, 0, errors.New("get article list from mysql failed: " + err.Error())
 	}
 	for _, art := range articleList {
 		art.Content = tool.Base64Decode(art.Content)
 	}
-	return articleList, nil
+	return articleList, count, nil
 }
 
 func articleToMap(a *article.Article) map[string]interface{} {
@@ -92,6 +98,9 @@ func articleToMap(a *article.Article) map[string]interface{} {
 	m["content"] = a.Content
 	m["cover_img"] = a.CoverImg
 	m["summary"] = a.Summary
+	m["visibility"] = a.Visibility
+	m["tags"] = a.Tags
+	m["typ"] = a.Typ
 	m["uid"] = a.Uid
 	m["create_time"] = a.CreateTime.Format(tool.DefaultDateTimeLayout)
 	m["update_time"] = a.UpdateTime.Format(tool.DefaultDateTimeLayout)

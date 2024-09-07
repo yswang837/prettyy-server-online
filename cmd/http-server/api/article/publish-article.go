@@ -14,12 +14,14 @@ import (
 // 2000120
 
 type articleParams struct {
-	Title    string `json:"title" form:"title" binding:"required"`         // 文章标题
-	Content  string `json:"content" form:"content" binding:"required"`     // 文章内容
-	Uid      int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
-	CoverImg string `json:"cover_img" form:"cover_img" binding:"required"` // 文章封面url
-	Summary  string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
-
+	Title      string `json:"title" form:"title" binding:"required"`         // 文章标题
+	Content    string `json:"content" form:"content" binding:"required"`     // 文章内容
+	CoverImg   string `json:"cover_img" form:"cover_img" binding:"required"` // 文章封面url
+	Summary    string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
+	Visibility string `json:"visibility" form:"visibility"`                  // 文章的可见性，默认全部可见 "1"-全部可见 "2"-VIP可见 "3"-粉丝可见 "4"-仅我可见
+	Tags       string `json:"tags" form:"tags" binding:"required"`           // 文章标签，以英文逗号分隔，最多10个标签，由用户发文的时候打标签
+	Typ        string `json:"typ" form:"typ"`                                // 文章类型，默认原创，"1"-原创 "2"-转载 "3"-翻译 "4"-其他
+	Uid        int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
 }
 
 func (s *Server) PublishArticle(ctx *gin.Context) {
@@ -29,11 +31,14 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		return
 	}
 	a := &article2.Article{
-		Title:    params.Title,
-		Content:  tool.Base64Encode(params.Content),
-		CoverImg: params.CoverImg,
-		Summary:  params.Summary,
-		Uid:      params.Uid,
+		Title:      params.Title,
+		Content:    tool.Base64Encode(params.Content),
+		CoverImg:   params.CoverImg,
+		Summary:    params.Summary,
+		Visibility: params.Visibility,
+		Tags:       params.Tags,
+		Typ:        params.Typ,
+		Uid:        params.Uid,
 	}
 	if err := article.Add(a); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})

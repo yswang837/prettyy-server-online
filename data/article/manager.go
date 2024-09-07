@@ -54,7 +54,7 @@ func (m *Manager) Get(aid string) (*Article, error) {
 }
 
 // GetArticleList 简单查询则参数传递对应类型的零值，也支持分页查询，也支持条件查询
-func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ string) (art []*Article, err error) {
+func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ string) (art []*Article, count int64, err error) {
 	art = []*Article{}
 	db := m.slave(strconv.Itoa(rand.Intn(100))) // 随机从从库中找一个表获取数据，它不是aid
 	if uid >= 10000 {
@@ -66,20 +66,22 @@ func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ 
 	if typ != "" {
 		db.Scopes(withTyp(typ))
 	}
+	db.Model(&art).Count(&count)
 	if pageSize > 0 {
 		db.Limit(pageSize)
 	} else {
 		db.Limit(20)
 	}
+
 	offset := 0
 	if page > 1 && pageSize > 0 {
 		offset = (page - 1) * pageSize
 	}
 	if err = db.Offset(offset).Find(&art).Error; err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	if len(art) == 0 {
-		return nil, errors.New("record not found")
+		return nil, 0, errors.New("record not found")
 	}
 	return
 }
