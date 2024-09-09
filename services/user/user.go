@@ -75,13 +75,13 @@ func (c *Client) Add(u *user.User) (userObj *user.User, err error) {
 	u.CreateTime = time.Now()
 	u.UpdateTime = time.Now()
 	u.LoginTime = time.Now()
-	if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), userToMap(u)); err != nil {
+	if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), UserToMap(u)); err != nil {
 		return nil, errors.New("register to redis failed: " + err.Error())
 	}
 	return
 }
 
-func userToMap(u *user.User) map[string]interface{} {
+func UserToMap(u *user.User) map[string]interface{} {
 	if u == nil {
 		return nil
 	}
@@ -105,7 +105,7 @@ func userToMap(u *user.User) map[string]interface{} {
 	return m
 }
 
-func mapToUser(m map[string]string) *user.User {
+func MapToUser(m map[string]string) *user.User {
 	if m == nil {
 		return nil
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetUser(uid string) (*user.User, error) {
 	}
 	var u *user.User
 	if len(m) != 0 {
-		u = mapToUser(m)
+		u = MapToUser(m)
 		if u != nil {
 			return u, nil
 		}

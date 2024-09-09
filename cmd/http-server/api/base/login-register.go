@@ -64,16 +64,9 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		return
 	}
 	// 执行到这，两种验证码都通过 或者 账密登录时密码不为空
-
-	// 生成token，无论注册还是登录均带上token返回
-	token, err := tool.GenerateToken()
-	if err != nil || token == "" {
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
-		return
-	}
+	token := ""
 	// 检查用户是否已经注册，通过Email检查反向索引库，如果存在，则已注册，否则未注册
 	i, _ := invertedIndex2.Get(p.Email, "1")
-	//u, _ := user3.GetUser(p.Email)
 	if i == nil {
 		// 未注册，走注册逻辑
 		user := &user2.User{Email: p.Email, Password: p.Password}
@@ -85,11 +78,19 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 				return
 			}
+			// 生成token，无论注册还是登录均带上token返回
+			token, err = tool.GenerateToken(userObj.Uid)
+			if err != nil || token == "" {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
+				return
+			}
 		} else {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 			return
 		}
-		result := map[string]interface{}{"token": token, "user": userObj}
+		m := user3.UserToMap(userObj)
+		delete(m, "uid")
+		result := map[string]interface{}{"token": token, "user": m}
 		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
 		return
 	} else {
@@ -99,7 +100,15 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
 			return
 		}
-		result := map[string]interface{}{"token": token, "user": user}
+		// 生成token，无论注册还是登录均带上token返回
+		token, err = tool.GenerateToken(user.Uid)
+		if err != nil || token == "" {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
+			return
+		}
+		m := user3.UserToMap(user)
+		delete(m, "uid")
+		result := map[string]interface{}{"token": token, "user": m}
 		switch p.Method {
 		case "1":
 			// 走到这里，验证码已匹配，直接更新登录时间
@@ -110,7 +119,6 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
 			return
 		case "2":
-
 			if user.Password == "" {
 				// 用户通过验证码注册的，从而未设置密码(数据库中密码为空)，而登录的时候走了密码登录
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})

@@ -18,6 +18,7 @@ var stSignKey = []byte("cab670bd4fcc32833476660de1ad1056")
 
 // JwtCustomClaims 注册声明是JWT声明集的结构化版本，仅限于注册声明名称，先把uid属性删掉，后续需要再还原
 type JwtCustomClaims struct {
+	Uid              int64
 	RegisteredClaims jwt.RegisteredClaims
 }
 
@@ -26,7 +27,7 @@ func (j JwtCustomClaims) Valid() error {
 }
 
 // GenerateToken 生成Token
-func GenerateToken() (string, error) {
+func GenerateToken(uid int64) (string, error) {
 	// 初始化
 	iJwtCustomClaims := JwtCustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -37,6 +38,7 @@ func GenerateToken() (string, error) {
 			//主题
 			Subject: "Token",
 		},
+		Uid: uid,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, iJwtCustomClaims)
 	return token.SignedString(stSignKey)

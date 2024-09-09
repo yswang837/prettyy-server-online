@@ -7,7 +7,7 @@ import (
 )
 
 func TestGenerateToken(t *testing.T) {
-	token, err := GenerateToken()
+	token, err := GenerateToken(10001)
 	assert.Equal(t, nil, err)
 	fmt.Println(token)
 	parsedToken, err := ParseToken(token)
