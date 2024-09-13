@@ -30,6 +30,6 @@ func (s *Server) CheckPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000022, Message: "密码为空，请设置密码"})
 		return
 	}
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000021, Message: "有效的密码"})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000020, Message: "有效的密码"})
 	return
 }

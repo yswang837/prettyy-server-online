@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	TokenExpire = 3600
+	TokenExpire = 86400
 )
 
 // jwt秘钥
@@ -31,8 +31,8 @@ func GenerateToken(uid int64) (string, error) {
 	// 初始化
 	iJwtCustomClaims := JwtCustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			// 设置过期时间 在当前基础上 添加一个小时后 过期
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpire)),
+			// 设置过期时间 在当前基础上 添加一天后 过期
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(TokenExpire) * time.Second)),
 			// 颁发时间 也就是生成时间
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 			//主题

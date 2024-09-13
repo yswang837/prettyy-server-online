@@ -70,11 +70,12 @@ func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ 
 	if pageSize > 0 {
 		db.Limit(pageSize)
 	} else {
+		pageSize = 20
 		db.Limit(20)
 	}
 
 	offset := 0
-	if page > 1 && pageSize > 0 {
+	if page > 1 {
 		offset = (page - 1) * pageSize
 	}
 	if err = db.Offset(offset).Find(&art).Error; err != nil {
