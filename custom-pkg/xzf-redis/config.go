@@ -20,6 +20,7 @@ type Config struct {
 	MaxIdle      int
 	MaxActive    int
 	Wait         bool
+	Password     string
 	IdleTimeout  time.Duration
 	ConnTimeout  time.Duration
 	ReadTimeout  time.Duration
@@ -40,6 +41,7 @@ func DefaultConfig() *Config {
 		WriteTimeout: 100 * time.Millisecond,
 		Master:       []string{},
 		Slave:        []string{},
+		Password:     "",
 	}
 }
 
@@ -85,6 +87,9 @@ func NewConfigByFile(configFile string) (*Config, error) {
 	}
 	if connTimeout, _ := f.Section(redisSection).Key("conn_timeout").Int(); connTimeout != 0 {
 		cfg.ConnTimeout = time.Duration(connTimeout)
+	}
+	if password := f.Section(redisSection).Key("password").String(); password != "" {
+		cfg.Password = password
 	}
 	cfg.Master = strings.Split(f.Section(redisSection).Key("master").String(), ",")
 	cfg.Slave = strings.Split(f.Section(redisSection).Key("slave").String(), ",")

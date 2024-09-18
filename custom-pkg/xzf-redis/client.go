@@ -30,6 +30,9 @@ func NewClient(filename string) (*Client, error) {
 			if err != nil {
 				return nil, err
 			}
+			if _, err = client.Do("AUTH", cfg.Password); err != nil {
+				return nil, err
+			}
 			return client, nil
 		},
 	}
