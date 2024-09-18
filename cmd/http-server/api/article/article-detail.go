@@ -7,7 +7,7 @@ import (
 	"prettyy-server-online/services/article"
 )
 
-// PublishArticle 发表文章
+// ArticleDetail 文章详情页使用，通过aid获取文章信息
 // 4000160
 // 2000160
 

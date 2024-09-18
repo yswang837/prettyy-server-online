@@ -14,6 +14,7 @@ const (
 	URLUpdatePassword      = "/user/password"
 	URLPublishArticle      = "/article/publish"
 	URLDelArticle          = "/article/del"
+	URLGetUserInfoByAid    = "/article/get-user-info-by-aid"
 	URLFileUpload          = "/file/upload"
 	URLGetArticleDetail    = "/article/detail"
 	URLGetArticleList      = "/article/list"

@@ -26,6 +26,9 @@ func (s *Server) SetRoute(r *gin.Engine) {
 	r.GET(conf.URLGetArticleList, func(context *gin.Context) {
 		s.ArticleList(context)
 	})
+	r.GET(conf.URLGetUserInfoByAid, func(context *gin.Context) {
+		s.GetUserInfoByAid(context)
+	})
 	// 需要token认证的路由组
 	groupHandler := r.Group("").Use(middle_ware.JwtAuth())
 	groupHandler.POST(conf.URLPublishArticle, func(context *gin.Context) {
