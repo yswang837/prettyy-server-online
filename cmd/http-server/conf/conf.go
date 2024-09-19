@@ -13,9 +13,9 @@ const (
 	URLUpdateBirthday      = "/user/birthday"
 	URLUpdatePassword      = "/user/password"
 	URLPublishArticle      = "/article/publish"
+	URLGetArticleList      = "/article/list"
+	URLGetArticleDetail    = "/article/detail"
 	URLDelArticle          = "/article/del"
 	URLGetUserInfoByAid    = "/article/get-user-info-by-aid"
 	URLFileUpload          = "/file/upload"
-	URLGetArticleDetail    = "/article/detail"
-	URLGetArticleList      = "/article/list"
 )
