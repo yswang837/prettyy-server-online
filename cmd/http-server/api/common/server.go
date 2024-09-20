@@ -15,8 +15,12 @@ func NewServer() *Server {
 	return &Server{}
 }
 
+// Init 初始化服务，该目录是nginx托管的前端静态文件的目录，后端upload上来的文件直接放到这里就可以直接访问了
 func (s *Server) Init() (err error) {
-	return os.MkdirAll("./uploads", os.ModePerm)
+	if os.Getenv("idc") == "dev" {
+		return os.MkdirAll("./uploads", os.ModePerm)
+	}
+	return os.MkdirAll("/root/prettyy-web-online/dist/uploads", os.ModePerm)
 }
 
 func (s *Server) SetRoute(r *gin.Engine) {

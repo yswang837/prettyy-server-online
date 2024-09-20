@@ -36,6 +36,6 @@ func (s *Server) FileUpload(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000143, Message: "保存文件错误"})
 		return
 	}
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121:8888/uploads/%s", file.Filename)})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121/uploads/%s", file.Filename)})
 	return
 }
