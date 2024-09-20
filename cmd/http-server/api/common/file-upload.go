@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
+	"prettyy-server-online/utils/tool"
 )
 
 // FileUpload 文件上传
@@ -36,6 +37,6 @@ func (s *Server) FileUpload(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000143, Message: "保存文件错误"})
 		return
 	}
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121/uploads/%s", file.Filename)})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121/uploads/%s", tool.MakeFileName(file.Filename))})
 	return
 }

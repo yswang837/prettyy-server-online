@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"hash/crc32"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -52,5 +53,12 @@ func TimeToString(t time.Time) string {
 	if t.IsZero() {
 		return ""
 	}
-	return t.Format(DefaultDateLayout)
+	return t.Format(DefaultFileNameDateLayout)
+}
+
+func MakeFileName(filename string) string {
+	if filename == "" {
+		return ""
+	}
+	return TimeToString(time.Now()) + "_" + ToMd5(filename)[:8] + "." + filepath.Ext(filename)
 }
