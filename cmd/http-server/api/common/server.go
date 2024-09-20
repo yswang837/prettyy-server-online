@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/gin-gonic/gin"
+	"os"
 	"prettyy-server-online/cmd/http-server/conf"
 	middle_ware "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
 )
@@ -15,7 +16,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) Init() (err error) {
-	return nil
+	return os.MkdirAll("./uploads", os.ModePerm)
 }
 
 func (s *Server) SetRoute(r *gin.Engine) {
