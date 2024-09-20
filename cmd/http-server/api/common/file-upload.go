@@ -26,7 +26,7 @@ func (s *Server) FileUpload(ctx *gin.Context) {
 		return
 	}
 	defer src.Close()
-	dst, err := os.Create(filepath.Join("./uploads", file.Filename))
+	dst, err := os.Create(filepath.Join(uploadDir, file.Filename))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000142, Message: "创建文件错误"})
 		return

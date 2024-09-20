@@ -7,6 +7,10 @@ import (
 	middle_ware "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
 )
 
+const (
+	uploadDir = "/root/prettyy-web-online/dist/uploads"
+)
+
 // Server 绑定所有通用的服务
 type Server struct {
 }
@@ -20,7 +24,7 @@ func (s *Server) Init() (err error) {
 	if os.Getenv("idc") == "dev" {
 		return os.MkdirAll("./uploads", os.ModePerm)
 	}
-	return os.MkdirAll("/root/prettyy-web-online/dist/uploads", os.ModePerm)
+	return os.MkdirAll(uploadDir, os.ModePerm)
 }
 
 func (s *Server) SetRoute(r *gin.Engine) {
