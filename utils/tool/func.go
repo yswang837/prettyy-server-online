@@ -60,5 +60,5 @@ func MakeFileName(filename string) string {
 	if filename == "" {
 		return ""
 	}
-	return TimeToString(time.Now()) + "_" + ToMd5(filename)[:8] + "." + filepath.Ext(filename)
+	return TimeToString(time.Now()) + "_" + ToMd5(filename)[:8] + filepath.Ext(filename)
 }
