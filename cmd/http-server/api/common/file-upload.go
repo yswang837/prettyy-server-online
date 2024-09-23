@@ -37,6 +37,11 @@ func (s *Server) FileUpload(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000143, Message: "保存文件错误"})
 		return
 	}
+	if os.Getenv("idc") == "dev" {
+		// 测试时，需关闭auth中间件
+		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://127.0.0.1:6677/uploads/%s", tool.MakeFileName(file.Filename))})
+		return
+	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121/uploads/%s", tool.MakeFileName(file.Filename))})
 	return
 }
