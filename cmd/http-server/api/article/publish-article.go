@@ -44,6 +44,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
+	// todo 向反向索引中添加uid->aid1,aid2,...的映射，以便在开启分表后，内容管理页面查询当前用户的文章
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
 	return
 }
