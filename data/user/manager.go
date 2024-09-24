@@ -131,7 +131,7 @@ func (m *Manager) slave(uid string) *gorm.DB {
 }
 
 func selectTable(uid string) func(tx *gorm.DB) *gorm.DB {
-	if os.Getenv("PRETTYY_TEST") == "dev" {
+	if os.Getenv("idc") == "dev" {
 		return func(tx *gorm.DB) *gorm.DB {
 			return tx.Table(tablePrefix + "0")
 		}
