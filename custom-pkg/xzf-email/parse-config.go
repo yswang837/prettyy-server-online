@@ -8,8 +8,9 @@ import (
 
 var (
 	EmailFrom  string
+	EmailName  string
 	Addr       string
-	Port       string
+	Port       int
 	Username   string
 	Password   string
 	ActiveTime string
@@ -25,9 +26,10 @@ func init() {
 }
 
 func LoadEmail(f *ini.File) {
-	EmailFrom = f.Section("email").Key("EmailFrom").MustString("小钻风科技有限责任公司 <1714113169@qq.com>")
+	EmailFrom = f.Section("email").Key("EmailFrom").MustString("1714113169@qq.com")
+	EmailName = f.Section("email").Key("EmailName").MustString("北京量子跃迁科技有限公司")
 	Addr = f.Section("email").Key("Addr").MustString("smtp.qq.com")
-	Port = f.Section("email").Key("Port").MustString(":587")
+	Port = f.Section("email").Key("Port").MustInt(465)
 	Username = f.Section("email").Key("Username").MustString("1714113169@qq.com")
 	Password = f.Section("email").Key("Password").MustString("bxvjwuyyeoqfdced")
 	ActiveTime = f.Section("email").Key("ActiveTime").MustString("5")
