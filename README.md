@@ -123,6 +123,27 @@ CREATE TABLE `article_0` (
    `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
     PRIMARY KEY (`aid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
+CREATE TABLE `column_0` (
+    `cid` varchar(32) NOT NULL DEFAULT '' COMMENT 'column id',
+    `title` varchar(64) NOT NULL DEFAULT '' COMMENT 'title',
+    `cover_img` varchar(256) NOT NULL DEFAULT '' COMMENT 'cover img',
+    `summary` varchar(256) NOT NULL DEFAULT '' COMMENT 'summary',
+    `front_display` varchar(8) NOT NULL DEFAULT '1' COMMENT 'front display',
+    `is_free_column` varchar(8) NOT NULL DEFAULT '2' COMMENT 'is free column',
+    `subscribe_num` int(11) NOT NULL DEFAULT 0 COMMENT 'subscribe num',
+    `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
+    `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
+    `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
+    PRIMARY KEY (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
+CREATE TABLE `article_column_0` (
+    `aid` varchar(32) NOT NULL DEFAULT '' COMMENT 'article id',
+    `cid` varchar(32) NOT NULL DEFAULT '' COMMENT 'column id',
+    `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
+    `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
+    `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
+    PRIMARY KEY (`aid`,`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 ```
 
 

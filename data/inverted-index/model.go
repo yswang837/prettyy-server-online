@@ -17,6 +17,7 @@ type InvertedIndex struct {
 	Number     string    `json:"number"`      // 当number为1时，表示email，当number为2时，表示phone
 	Uid        int64     `json:"uid"`         // 用户id
 	CreateTime time.Time `json:"create_time"` // 创建时间
+	UpdateTime time.Time `json:"update_time"` // 更新时间，可用于换绑邮箱，换绑手机号等，预留功能
 }
 
 func BuildPrimaryKey(AttrValue, Number string) string {
