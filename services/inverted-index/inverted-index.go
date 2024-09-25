@@ -57,6 +57,13 @@ func (c *Client) UpdateAid(typ, attrValue, aid string) error {
 	if typ == "" || attrValue == "" || aid == "" {
 		return tool.ErrParams
 	}
+	m := map[string]interface{}{
+		"index":       aid,
+		"update_time": time.Now().Format(tool.DefaultDateTimeLayout),
+	}
+	if _, err := c.cacheManager.HMSet(typ+attrValue, m); err != nil {
+		return errors.New("set inverted index to redis failed: " + err.Error())
+	}
 	return c.manager.Update(typ, attrValue, aid)
 }
 
@@ -89,7 +96,7 @@ func invertedIndexToMap(i *invertedIndex.InvertedIndex) map[string]interface{} {
 	m["typ"] = i.Typ
 	m["index"] = i.Index
 	m["create_time"] = i.CreateTime.Format(tool.DefaultDateTimeLayout)
-	m["update_time"] = i.CreateTime.Format(tool.DefaultDateTimeLayout)
+	m["update_time"] = i.UpdateTime.Format(tool.DefaultDateTimeLayout)
 	return m
 }
 

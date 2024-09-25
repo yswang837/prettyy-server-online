@@ -158,9 +158,3 @@ func withTyp(tpy string) func(tx *gorm.DB) *gorm.DB {
 		return tx.Where("typ = ?", tpy)
 	}
 }
-
-func withAids(aids []string) func(tx *gorm.DB) *gorm.DB {
-	return func(tx *gorm.DB) *gorm.DB {
-		return tx.Where("aid in ?", aids)
-	}
-}
