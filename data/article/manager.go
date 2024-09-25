@@ -95,6 +95,7 @@ func (m *Manager) GetContentManageArticleList(aids []string, visibility, typ str
 		if err = db.Scopes(withAid(aid)).First(art).Error; err != nil {
 			continue
 		}
+		artList = append(artList, art)
 		count++
 	}
 	if len(artList) == 0 {
