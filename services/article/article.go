@@ -2,7 +2,6 @@ package article
 
 import (
 	"errors"
-	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	"prettyy-server-online/data/article"
 	"prettyy-server-online/utils/tool"
 	"strconv"
@@ -32,7 +31,6 @@ func (c *Client) Add(a *article.Article) (err error) {
 	if a == nil {
 		return tool.ErrParams
 	}
-	a.Aid = xzfSnowflake.GenID("AA")
 	if a.Visibility == "" {
 		a.Visibility = "1"
 	}
@@ -155,9 +153,6 @@ func init() {
 	var err error
 	defaultClient, err = NewClient()
 	if err != nil {
-		panic(err)
-	}
-	if err = xzfSnowflake.Init("2024-03-09", "1"); err != nil {
 		panic(err)
 	}
 }

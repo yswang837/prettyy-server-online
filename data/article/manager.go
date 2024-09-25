@@ -56,7 +56,7 @@ func (m *Manager) Get(aid string) (*Article, error) {
 // GetArticleList 简单查询则参数传递对应类型的零值，也支持分页查询，也支持条件查询
 func (m *Manager) GetArticleList(uid int64, page, pageSize int, visibility, typ string) (art []*Article, count int64, err error) {
 	art = []*Article{}
-	db := m.slave(strconv.Itoa(rand.Intn(100))) // 随机从从库中找一个表获取数据，它不是aid
+	db := m.slave(strconv.Itoa(rand.Intn(100))) // 随机从从库中找一个表获取数据，它不是aid，// todo 这里有问题，当前用户的文章，可能不在随机的这个从库中，目前没问题是因为还未开启分表
 	if uid >= 10000 {
 		db.Scopes(withUid(strconv.FormatInt(uid, 10)))
 	}
@@ -107,7 +107,7 @@ func (m *Manager) slave(aid string) *gorm.DB {
 }
 
 func selectTable(aid string) func(tx *gorm.DB) *gorm.DB {
-	if os.Getenv("PRETTYY_TEST") == "dev" {
+	if os.Getenv("idc") == "dev" {
 		return func(tx *gorm.DB) *gorm.DB {
 			return tx.Table(tablePrefix + "0")
 		}

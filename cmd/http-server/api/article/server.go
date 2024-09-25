@@ -3,7 +3,8 @@ package article
 import (
 	"github.com/gin-gonic/gin"
 	"prettyy-server-online/cmd/http-server/conf"
-	middle_ware "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
+	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
+	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 )
 
 // Server 绑定所有文章相关的服务
@@ -15,7 +16,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) Init() (err error) {
-	return nil
+	return xzfSnowflake.Init("2024-03-09", "1")
 }
 
 func (s *Server) SetRoute(r *gin.Engine) {
@@ -30,7 +31,7 @@ func (s *Server) SetRoute(r *gin.Engine) {
 		s.GetUserInfoByAid(context)
 	})
 	// 需要token认证的路由组
-	groupHandler := r.Group("").Use(middle_ware.JwtAuth())
+	groupHandler := r.Group("").Use(middleWare.JwtAuth())
 	groupHandler.POST(conf.URLPublishArticle, func(context *gin.Context) {
 		s.PublishArticle(context)
 	})

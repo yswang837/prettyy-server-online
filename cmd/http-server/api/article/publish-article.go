@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
+	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	article2 "prettyy-server-online/data/article"
 	"prettyy-server-online/services/article"
 	"prettyy-server-online/utils/tool"
@@ -31,6 +32,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		return
 	}
 	a := &article2.Article{
+		Aid:        xzfSnowflake.GenID("AA"),
 		Title:      params.Title,
 		Content:    tool.Base64Encode(params.Content),
 		CoverImg:   params.CoverImg,
