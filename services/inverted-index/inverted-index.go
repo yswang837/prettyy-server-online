@@ -5,7 +5,6 @@ import (
 	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	invertedIndex "prettyy-server-online/data/inverted-index"
 	"prettyy-server-online/utils/tool"
-	"strconv"
 	"time"
 )
 
@@ -62,7 +61,7 @@ func (c *Client) Add(i *invertedIndex.InvertedIndex) (err error) {
 		return errors.New("add inverted index to mysql failed: " + err.Error())
 	}
 	i.CreateTime = time.Now()
-	if _, err = c.cacheManager.HMSet(i.AttrValue+i.Number, invertedIndexToMap(i)); err != nil {
+	if _, err = c.cacheManager.HMSet(i.AttrValue+i.Typ, invertedIndexToMap(i)); err != nil {
 		return errors.New("set inverted index to redis failed: " + err.Error())
 	}
 	return
@@ -74,8 +73,8 @@ func invertedIndexToMap(i *invertedIndex.InvertedIndex) map[string]interface{} {
 	}
 	m := make(map[string]interface{})
 	m["attr_value"] = i.AttrValue
-	m["number"] = i.Number
-	m["uid"] = i.Uid
+	m["typ"] = i.Typ
+	m["index"] = i.Index
 	m["create_time"] = i.CreateTime.Format(tool.DefaultDateTimeLayout)
 	return m
 }
@@ -84,11 +83,10 @@ func mapToInvertedIndex(m map[string]string) *invertedIndex.InvertedIndex {
 	if len(m) == 0 {
 		return nil
 	}
-	uid, _ := strconv.Atoi(m["uid"])
 	a := &invertedIndex.InvertedIndex{}
 	a.AttrValue = m["attr_value"]
-	a.Number = m["number"]
-	a.Uid = int64(uid)
+	a.Typ = m["typ"]
+	a.Index = m["index"]
 	a.CreateTime = tool.StringToTime(m["create_time"])
 	return a
 }

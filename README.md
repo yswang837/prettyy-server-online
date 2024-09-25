@@ -96,11 +96,12 @@ CREATE TABLE `user_0` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `inverted_index_0` (
+  `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
-  `number` varchar(8) NOT NULL DEFAULT '' COMMENT 'number',
-  `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
+  `index` int(11) NOT NULL DEFAULT 0 COMMENT 'index',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
-  PRIMARY KEY (`attr_value`,`number`)
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
+  PRIMARY KEY (`typ`,`attr_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `article_0` (

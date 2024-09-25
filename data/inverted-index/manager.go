@@ -26,11 +26,11 @@ func NewManager() (*Manager, error) {
 }
 
 func (m *Manager) Add(i *InvertedIndex) error {
-	if i == nil || i.Uid == 0 || i.AttrValue == "" || i.Number == "" {
+	if i == nil || i.Index == "" || i.AttrValue == "" || i.Typ == "" {
 		return tool.ErrParams
 	}
 	i.CreateTime = time.Now()
-	if err := m.master(BuildPrimaryKey(i.AttrValue, i.Number)).Create(i).Error; err != nil {
+	if err := m.master(BuildPrimaryKey(i.AttrValue, i.Typ)).Create(i).Error; err != nil {
 		return err
 	}
 	return nil
@@ -41,10 +41,10 @@ func (m *Manager) Get(attrValue, number string) (*InvertedIndex, error) {
 		return nil, tool.ErrParams
 	}
 	i := &InvertedIndex{}
-	if err := m.slave(BuildPrimaryKey(i.AttrValue, i.Number)).Scopes(withAttrValue(attrValue), withNumber(number)).First(i).Error; err != nil {
+	if err := m.slave(BuildPrimaryKey(i.AttrValue, i.Typ)).Scopes(withAttrValue(attrValue), withNumber(number)).First(i).Error; err != nil {
 		return nil, err
 	}
-	if i.Uid == 0 {
+	if i.Index == "" {
 		return nil, errors.New("record not found")
 	}
 	return i, nil

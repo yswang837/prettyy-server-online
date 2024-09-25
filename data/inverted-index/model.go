@@ -13,9 +13,9 @@ const (
 
 // InvertedIndex 面向数据库，联合主键(attr_value, number)
 type InvertedIndex struct {
-	Number     string    `json:"number"`      // 当number为1时，表示email，当number为2时，表示phone // todo 可以换成typ
+	Typ        string    `json:"typ"`         // 当number为1时，表示email，当number为2时，表示phone
 	AttrValue  string    `json:"attr_value"`  // 属性值，目前是：email的值，后续可以新增phone的值
-	Uid        int64     `json:"uid"`         // 用户id，// todo 这里不一定只是uid，可以换成index
+	Index      string    `json:"index"`       // 索引值
 	CreateTime time.Time `json:"create_time"` // 创建时间
 	UpdateTime time.Time `json:"update_time"` // 更新时间，可用于换绑邮箱，换绑手机号等，预留功能
 }
@@ -28,7 +28,7 @@ func BuildPrimaryKey(AttrValue, Number string) string {
 }
 
 func (i *InvertedIndex) TableName() string {
-	return tablePrefix + tool.Crc(BuildPrimaryKey(i.AttrValue, i.Number), tableNum)
+	return tablePrefix + tool.Crc(BuildPrimaryKey(i.AttrValue, i.Typ), tableNum)
 }
 
 func (i *InvertedIndex) String() string {
