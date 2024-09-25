@@ -40,6 +40,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		Typ:        params.Typ,
 		Uid:        params.Uid,
 	}
+	// todo add 完成，将文章列表或者aid返回回来
 	if err := article.Add(a); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
