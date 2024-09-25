@@ -28,9 +28,9 @@ func NewClient() (*Client, error) {
 	return &Client{manager: manager, cacheManager: cache}, nil
 }
 
-func (c *Client) Add(a *article.Article) (err error) {
+func (c *Client) Add(a *article.Article) (art *article.Article, err error) {
 	if a == nil {
-		return tool.ErrParams
+		return nil, tool.ErrParams
 	}
 	a.Aid = xzfSnowflake.GenID("AA")
 	if a.Visibility == "" {
@@ -40,14 +40,14 @@ func (c *Client) Add(a *article.Article) (err error) {
 		a.Typ = "1"
 	}
 	if err = c.manager.Add(a); err != nil {
-		return errors.New("add article to mysql failed: " + err.Error())
+		return nil, errors.New("add article to mysql failed: " + err.Error())
 	}
 	a.CreateTime = time.Now()
 	a.UpdateTime = time.Now()
 	if _, err = c.cacheManager.HMSet(a.Aid, articleToMap(a)); err != nil {
-		return errors.New("set article to redis failed: " + err.Error())
+		return nil, errors.New("set article to redis failed: " + err.Error())
 	}
-	return
+	return c.Get(a.Aid)
 }
 
 func (c *Client) Get(aid string) (*article.Article, error) {
@@ -130,7 +130,7 @@ func mapToArticle(m map[string]string) *article.Article {
 	return a
 }
 
-func Add(a *article.Article) (err error) {
+func Add(a *article.Article) (art *article.Article, err error) {
 	return defaultClient.Add(a)
 }
 

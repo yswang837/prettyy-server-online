@@ -29,19 +29,21 @@ func (m *Manager) Add(i *InvertedIndex) error {
 	if i == nil || i.Index == "" || i.AttrValue == "" || i.Typ == "" {
 		return tool.ErrParams
 	}
-	i.CreateTime = time.Now()
-	if err := m.master(BuildPrimaryKey(i.AttrValue, i.Typ)).Create(i).Error; err != nil {
+	now := time.Now()
+	i.CreateTime = now
+	i.UpdateTime = now
+	if err := m.master(BuildPrimaryKey(i.Typ, i.AttrValue)).Create(i).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Manager) Get(attrValue, number string) (*InvertedIndex, error) {
-	if attrValue == "" || number == "" {
+func (m *Manager) Get(typ, attrValue string) (*InvertedIndex, error) {
+	if attrValue == "" || typ == "" {
 		return nil, tool.ErrParams
 	}
 	i := &InvertedIndex{}
-	if err := m.slave(BuildPrimaryKey(i.AttrValue, i.Typ)).Scopes(withAttrValue(attrValue), withNumber(number)).First(i).Error; err != nil {
+	if err := m.slave(BuildPrimaryKey(i.Typ, i.AttrValue)).Scopes(withAttrValue(attrValue), withNumber(typ)).First(i).Error; err != nil {
 		return nil, err
 	}
 	if i.Index == "" {
@@ -76,8 +78,8 @@ func withAttrValue(attrValue string) func(tx *gorm.DB) *gorm.DB {
 	}
 }
 
-func withNumber(number string) func(tx *gorm.DB) *gorm.DB {
+func withNumber(typ string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
-		return tx.Where("number = ?", number)
+		return tx.Where("typ = ?", typ)
 	}
 }

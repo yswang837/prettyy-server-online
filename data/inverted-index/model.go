@@ -11,6 +11,10 @@ const (
 	tablePrefix = "inverted_index_"
 )
 
+// typ值说明
+// 1: email -> uid
+// 2: uid -> aid
+
 // InvertedIndex 面向数据库，联合主键(attr_value, number)
 type InvertedIndex struct {
 	Typ        string    `json:"typ"`         // 当number为1时，表示email，当number为2时，表示phone

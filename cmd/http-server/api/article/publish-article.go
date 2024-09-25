@@ -5,8 +5,11 @@ import (
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	article2 "prettyy-server-online/data/article"
+	invertedIndex2 "prettyy-server-online/data/inverted-index"
 	"prettyy-server-online/services/article"
+	invertedIndex "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
+	"strconv"
 )
 
 // PublishArticle 发表文章
@@ -40,12 +43,26 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		Typ:        params.Typ,
 		Uid:        params.Uid,
 	}
-	// todo add 完成，将文章列表或者aid返回回来
-	if err := article.Add(a); err != nil {
+	art, err := article.Add(a)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
-	// todo 向反向索引中添加uid->aid1,aid2,...的映射，以便在开启分表后，内容管理页面查询当前用户的文章
+	// 先查，查到了就追加aid，查不到就添加aid
+	// 向反向索引中添加uid->aid1,aid2,...的映射，以便在开启分表后，内容管理页面查询当前用户的文章
+	iFromDb, _ := invertedIndex.Get("2", strconv.FormatInt(params.Uid, 10))
+	if iFromDb == nil {
+		i := &invertedIndex2.InvertedIndex{Typ: "2", AttrValue: strconv.FormatInt(params.Uid, 10), Index: art.Aid}
+		if err = invertedIndex.Add(i); err != nil {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
+			return
+		}
+	} else {
+		iFromDb.Index = iFromDb.Index + "," + art.Aid
+		//i := &invertedIndex2.InvertedIndex{Typ: "2", AttrValue: strconv.FormatInt(params.Uid, 10), Index: iFromDb.Index}
+		//if err = invertedIndex.Update(i); err != nil {}
+	}
+
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
 	return
 }

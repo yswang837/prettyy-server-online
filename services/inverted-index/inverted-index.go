@@ -26,23 +26,23 @@ func NewClient() (*Client, error) {
 	}
 	return &Client{manager: manager, cacheManager: cache}, nil
 }
-func Get(attrValue, number string) (*invertedIndex.InvertedIndex, error) {
-	return defaultClient.Get(attrValue, number)
+func Get(typ, attrValue string) (*invertedIndex.InvertedIndex, error) {
+	return defaultClient.Get(typ, attrValue)
 }
 
-func (c *Client) Get(attrValue, number string) (*invertedIndex.InvertedIndex, error) {
-	if attrValue == "" || number == "" {
+func (c *Client) Get(typ, attrValue string) (*invertedIndex.InvertedIndex, error) {
+	if attrValue == "" || typ == "" {
 		return nil, tool.ErrParams
 	}
-	// key 由 attr_value和number拼接而成
-	iMap, err := c.cacheManager.HGetAll(attrValue + number)
+	// key 由 typ和attr_value拼接而成
+	iMap, err := c.cacheManager.HGetAll(typ + attrValue)
 	if err != nil {
 		return nil, errors.New("get inverted index from redis failed: " + err.Error())
 	}
 	if len(iMap) != 0 {
 		return mapToInvertedIndex(iMap), nil
 	}
-	i, err := c.manager.Get(attrValue, number)
+	i, err := c.manager.Get(typ, attrValue)
 	if err != nil {
 		return nil, errors.New("get inverted index from mysql failed: " + err.Error())
 	}
@@ -61,7 +61,7 @@ func (c *Client) Add(i *invertedIndex.InvertedIndex) (err error) {
 		return errors.New("add inverted index to mysql failed: " + err.Error())
 	}
 	i.CreateTime = time.Now()
-	if _, err = c.cacheManager.HMSet(i.AttrValue+i.Typ, invertedIndexToMap(i)); err != nil {
+	if _, err = c.cacheManager.HMSet(i.Typ+i.AttrValue, invertedIndexToMap(i)); err != nil {
 		return errors.New("set inverted index to redis failed: " + err.Error())
 	}
 	return
