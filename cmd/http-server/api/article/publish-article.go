@@ -64,6 +64,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 			return
 		}
 	} else {
+		// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430篇文章
 		idb.Index = idb.Index + "," + a.Aid
 		if err := invertedIndex2.UpdateAid(indexTyp, uid, idb.Index); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000123, Message: "更新文章的反向索引失败"})

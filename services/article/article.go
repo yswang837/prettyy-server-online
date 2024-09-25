@@ -3,8 +3,10 @@ package article
 import (
 	"errors"
 	"prettyy-server-online/data/article"
+	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -76,14 +78,28 @@ func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*a
 }
 
 func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, int64, error) {
-	articleList, count, err := c.manager.GetArticleList(uid, page, pageSize, visibility, typ)
-	if err != nil {
-		return nil, 0, errors.New("get article list from mysql failed: " + err.Error())
+	// 如果uid合法，则通过uid查询aid列表，否则随机查询一个article表，前者用于管理我的文章，后者用于主页显示，后者后期可优化成推荐
+	if uid >= 10000 {
+		iList, err := invertedIndex2.Get("2", strconv.FormatInt(uid, 10))
+		if err != nil {
+			return nil, 0, err
+		}
+		aids := strings.Split(iList.Index, ",")
+		if len(aids) <= 0 {
+			return nil, 0, errors.New("inverted index not found")
+		}
+		return c.manager.GetContentManageArticleList(aids, visibility, typ)
+	} else {
+		// 主页仅展示”全部可见“的文章
+		articleList, err := c.manager.GetHomeArticleList(page, pageSize, "1")
+		if err != nil {
+			return nil, 0, errors.New("get article list from mysql failed: " + err.Error())
+		}
+		for _, art := range articleList {
+			art.Content = tool.Base64Decode(art.Content)
+		}
+		return articleList, 0, nil
 	}
-	for _, art := range articleList {
-		art.Content = tool.Base64Decode(art.Content)
-	}
-	return articleList, count, nil
 }
 
 func articleToMap(a *article.Article) map[string]interface{} {

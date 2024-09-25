@@ -98,7 +98,7 @@ CREATE TABLE `user_0` (
 CREATE TABLE `inverted_index_0` (
   `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
-  `index` int(11) NOT NULL DEFAULT 0 COMMENT 'index',
+  `index` varchar(8192) NOT NULL DEFAULT '' COMMENT 'index',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
   PRIMARY KEY (`typ`,`attr_value`)
