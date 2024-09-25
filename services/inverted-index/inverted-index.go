@@ -2,7 +2,6 @@ package inverted_index
 
 import (
 	"errors"
-	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	invertedIndex "prettyy-server-online/data/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"time"
@@ -47,6 +46,18 @@ func (c *Client) Get(typ, attrValue string) (*invertedIndex.InvertedIndex, error
 		return nil, errors.New("get inverted index from mysql failed: " + err.Error())
 	}
 	return i, nil
+}
+
+// UpdateAid 其实是追加aid
+func UpdateAid(typ, attrValue, aid string) error {
+	return defaultClient.UpdateAid(typ, attrValue, aid)
+}
+
+func (c *Client) UpdateAid(typ, attrValue, aid string) error {
+	if typ == "" || attrValue == "" || aid == "" {
+		return tool.ErrParams
+	}
+	return c.manager.Update(typ, attrValue, aid)
 }
 
 func Add(i *invertedIndex.InvertedIndex) (err error) {
@@ -99,9 +110,6 @@ func init() {
 	var err error
 	defaultClient, err = NewClient()
 	if err != nil {
-		panic(err)
-	}
-	if err = xzfSnowflake.Init("2024-03-09", "1"); err != nil {
 		panic(err)
 	}
 }

@@ -38,12 +38,19 @@ func (m *Manager) Add(i *InvertedIndex) error {
 	return nil
 }
 
+func (m *Manager) Update(typ, attrValue string, index string) error {
+	if typ == "" || attrValue == "" || index == "" {
+		return tool.ErrParams
+	}
+	return m.master(BuildPrimaryKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Update("index", index).Error
+}
+
 func (m *Manager) Get(typ, attrValue string) (*InvertedIndex, error) {
 	if typ == "" || attrValue == "" {
 		return nil, tool.ErrParams
 	}
 	i := &InvertedIndex{}
-	if err := m.slave(BuildPrimaryKey(i.Typ, i.AttrValue)).Scopes(withNumber(typ), withAttrValue(attrValue)).First(i).Error; err != nil {
+	if err := m.slave(BuildPrimaryKey(i.Typ, i.AttrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).First(i).Error; err != nil {
 		return nil, err
 	}
 	if i.Index == "" {
@@ -78,7 +85,7 @@ func withAttrValue(attrValue string) func(tx *gorm.DB) *gorm.DB {
 	}
 }
 
-func withNumber(typ string) func(tx *gorm.DB) *gorm.DB {
+func withTyp(typ string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
 		return tx.Where("typ = ?", typ)
 	}

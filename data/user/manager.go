@@ -56,70 +56,49 @@ func (m *Manager) UpdateLoginTime(uid string) error {
 	if uid == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("login_time", time.Now()).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("login_time", time.Now()).Error
 }
 
 func (m *Manager) UpdatePassword(uid, password string) error {
 	if uid == "" || password == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("password", password).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("password", password).Error
 }
 
 func (m *Manager) UpdateNickName(uid, nickName string) error {
 	if uid == "" || nickName == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("nick_name", nickName).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("nick_name", nickName).Error
 }
 
 func (m *Manager) UpdateSummary(uid, summary string) error {
 	if uid == "" || summary == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("summary", summary).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("summary", summary).Error
 }
 
 func (m *Manager) UpdateProvinceCity(uid, provinceCity string) error {
 	if uid == "" || provinceCity == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("province_city", provinceCity).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("province_city", provinceCity).Error
 }
 
 func (m *Manager) UpdateBirthdayCity(uid, birthday string) error {
 	if uid == "" || birthday == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("birthday", birthday).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("birthday", birthday).Error
 }
 
 func (m *Manager) UpdateGender(uid, gender string) error {
 	if uid == "" || gender == "保密" || gender == "" {
 		return tool.ErrParams
 	}
-	if err := m.master(uid).Scopes(withUid(uid)).Update("gender", gender).Error; err != nil {
-		return err
-	}
-	return nil
+	return m.master(uid).Scopes(withUid(uid)).Update("gender", gender).Error
 }
 
 func (m *Manager) master(uid string) *gorm.DB {
