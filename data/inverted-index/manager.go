@@ -26,25 +26,27 @@ func NewManager() (*Manager, error) {
 }
 
 func (m *Manager) Add(i *InvertedIndex) error {
-	if i == nil || i.Uid == 0 || i.AttrValue == "" || i.Number == "" {
+	if i == nil || i.Index == "" || i.AttrValue == "" || i.Typ == "" {
 		return tool.ErrParams
 	}
-	i.CreateTime = time.Now()
-	if err := m.master(BuildPrimaryKey(i.AttrValue, i.Number)).Create(i).Error; err != nil {
+	now := time.Now()
+	i.CreateTime = now
+	i.UpdateTime = now
+	if err := m.master(BuildPrimaryKey(i.Typ, i.AttrValue)).Create(i).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Manager) Get(attrValue, number string) (*InvertedIndex, error) {
-	if attrValue == "" || number == "" {
+func (m *Manager) Get(typ, attrValue string) (*InvertedIndex, error) {
+	if typ == "" || attrValue == "" {
 		return nil, tool.ErrParams
 	}
 	i := &InvertedIndex{}
-	if err := m.slave(BuildPrimaryKey(i.AttrValue, i.Number)).Scopes(withAttrValue(attrValue), withNumber(number)).First(i).Error; err != nil {
+	if err := m.slave(BuildPrimaryKey(i.Typ, i.AttrValue)).Scopes(withNumber(typ), withAttrValue(attrValue)).First(i).Error; err != nil {
 		return nil, err
 	}
-	if i.Uid == 0 {
+	if i.Index == "" {
 		return nil, errors.New("record not found")
 	}
 	return i, nil
@@ -59,7 +61,7 @@ func (m *Manager) slave(key string) *gorm.DB {
 }
 
 func selectTable(key string) func(tx *gorm.DB) *gorm.DB {
-	if os.Getenv("PRETTYY_TEST") == "dev" {
+	if os.Getenv("idc") == "dev" {
 		return func(tx *gorm.DB) *gorm.DB {
 			return tx.Table(tablePrefix + "0")
 		}
@@ -76,8 +78,8 @@ func withAttrValue(attrValue string) func(tx *gorm.DB) *gorm.DB {
 	}
 }
 
-func withNumber(number string) func(tx *gorm.DB) *gorm.DB {
+func withNumber(typ string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
-		return tx.Where("number = ?", number)
+		return tx.Where("typ = ?", typ)
 	}
 }
