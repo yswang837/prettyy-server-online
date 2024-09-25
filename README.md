@@ -96,11 +96,12 @@ CREATE TABLE `user_0` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `inverted_index_0` (
+  `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
-  `number` varchar(8) NOT NULL DEFAULT '' COMMENT 'number',
-  `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
+  `index` int(11) NOT NULL DEFAULT 0 COMMENT 'index',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
-  PRIMARY KEY (`attr_value`,`number`)
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
+  PRIMARY KEY (`typ`,`attr_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `article_0` (
@@ -129,7 +130,7 @@ CREATE TABLE `column_0` (
     `cover_img` varchar(256) NOT NULL DEFAULT '' COMMENT 'cover img',
     `summary` varchar(256) NOT NULL DEFAULT '' COMMENT 'summary',
     `front_display` varchar(8) NOT NULL DEFAULT '1' COMMENT 'front display',
-    `is_free_column` varchar(8) NOT NULL DEFAULT '2' COMMENT 'is free column',
+    `is_free_column` varchar(8) NOT NULL DEFAULT '1' COMMENT 'is free column',
     `subscribe_num` int(11) NOT NULL DEFAULT 0 COMMENT 'subscribe num',
     `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
     `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
