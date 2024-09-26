@@ -66,14 +66,14 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 	// 执行到这，两种验证码都通过 或者 账密登录时密码不为空
 	token := ""
 	// 检查用户是否已经注册，通过Email检查反向索引库，如果存在，则已注册，否则未注册
-	i, _ := invertedIndex2.Get("1", p.Email)
-	if i == nil {
+	i, _ := invertedIndex2.Get(invertedIndex.TypEmailUid, p.Email)
+	if len(i) == 0 {
 		// 未注册，走注册逻辑
 		user := &user2.User{Email: p.Email, Password: p.Password}
 		userObj, err := user3.Add(user)
 		if err == nil {
 			// 添加反向索引
-			invertedObj := &invertedIndex.InvertedIndex{AttrValue: p.Email, Typ: "1", Index: strconv.FormatInt(userObj.Uid, 10)}
+			invertedObj := &invertedIndex.InvertedIndex{AttrValue: p.Email, Typ: invertedIndex.TypEmailUid, Index: strconv.FormatInt(userObj.Uid, 10)}
 			if err = invertedIndex2.Add(invertedObj); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 				return
@@ -94,8 +94,8 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
 		return
 	} else {
-		// 已注册，走登录逻辑
-		user, err := user3.GetUser(i.Index)
+		// 已注册，走登录逻辑，在这个逻辑下，一定只有一条，所以取第0个，
+		user, err := user3.GetUser(i[0].Index)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
 			return
