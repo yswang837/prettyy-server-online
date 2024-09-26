@@ -135,7 +135,8 @@ CREATE TABLE `column_0` (
     `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
     `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
     `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
-    PRIMARY KEY (`cid`)
+    PRIMARY KEY (`cid`),
+    UNIQUE (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 CREATE TABLE `article_column_0` (
     `aid` varchar(32) NOT NULL DEFAULT '' COMMENT 'article id',

@@ -33,7 +33,7 @@ type articleParams struct {
 	Summary    string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
 	Visibility string `json:"visibility" form:"visibility"`                  // 文章的可见性，默认全部可见 "1"-全部可见 "2"-VIP可见 "3"-粉丝可见 "4"-仅我可见
 	Tags       string `json:"tags" form:"tags" binding:"required"`           // 文章标签，以英文逗号分隔，最多10个标签，由用户发文的时候打标签
-	Column     string `json:"column" form:"column"`                          // 文章所属专栏，默认为空，非空则以英文逗号分隔，最多4个专栏，由用户发文的时候指定
+	Column     string `json:"column" form:"column"`                          // 文章所属专栏，默认为空，非空则以英文逗号分隔，最多4个专栏，由用户发文的时候指定，格式：cid1,title1,"",title2,cid3,title3
 	Typ        string `json:"typ" form:"typ"`                                // 文章类型，默认原创，"1"-原创 "2"-转载 "3"-翻译 "4"-其他
 	Uid        int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
 }
@@ -77,41 +77,45 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 			return
 		}
 	}
-
-	// 维护专栏表
-	var cidSlice []string
-	var titleSlice []string
+	// params.Column格式：cid1,title1,"",title2,cid3,title3
+	// 从params.Column中获取，如果cid存在，则跳过该cid和title，如果不存在则将其写入到needInsertToColumn
+	// needInsertToColumn 生成新的cid:title，用于写入专栏表和更新反向索引表
+	needInsertToColumn := make(map[string]string)
 	if params.Column != "" {
 		columns := strings.Split(params.Column, ",")
-		if len(columns) <= 0 || len(columns) >= 5 {
+		length := len(columns)
+		if length == 0 || length >= 9 || length%2 != 0 {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
 			return
 		}
-		for _, col := range columns {
-			cidSlice = append(cidSlice, xzfSnowflake.GenID(columnPrefix))
-			titleSlice = append(titleSlice, col)
-		}
-		if len(cidSlice) != 0 {
-			if err := column.Add(cidSlice, titleSlice, params.Uid); err != nil {
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
-				return
+		for i := 0; i < length; i = i + 2 {
+			if len(columns[i]) == 19 && strings.HasPrefix(columns[i], columnPrefix) {
+				continue
 			}
+			needInsertToColumn[xzfSnowflake.GenID(columnPrefix)] = columns[i+1]
 		}
 	}
-
-	// 维护uid和cid的关系
-	cid := strings.Join(cidSlice, ",")
-	if cid != "" {
+	if len(needInsertToColumn) != 0 {
+		// 维护专栏表
+		if err := column.Add(needInsertToColumn, params.Uid); err != nil {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
+		}
+		// 维护反正索引
 		idbc, _ := invertedIndex2.Get(indexCidTyp, uid)
+		var cidSlice []string
+		for cid := range needInsertToColumn {
+			cidSlice = append(cidSlice, cid)
+		}
+		cidStr := strings.Join(cidSlice, ",")
 		if idbc == nil {
-			i := &invertedIndex.InvertedIndex{Typ: indexCidTyp, AttrValue: uid, Index: cid}
+			i := &invertedIndex.InvertedIndex{Typ: indexCidTyp, AttrValue: uid, Index: cidStr}
 			if err := invertedIndex2.Add(i); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
 				return
 			}
 		} else {
 			// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430个专栏
-			idbc.Index = idbc.Index + "," + cid
+			idbc.Index = idbc.Index + "," + cidStr
 			if err := invertedIndex2.UpdateCid(indexCidTyp, uid, idbc.Index); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000127, Message: "更新专栏的反向索引失败"})
 				return

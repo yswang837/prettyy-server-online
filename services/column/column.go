@@ -2,7 +2,6 @@ package column
 
 import (
 	"prettyy-server-online/data/column"
-	"prettyy-server-online/utils/tool"
 )
 
 type Client struct {
@@ -19,14 +18,11 @@ func NewClient() (*Client, error) {
 	return &Client{manager: manager}, nil
 }
 
-func (c *Client) Add(cidSlice, titleSlice []string, uid int64) (err error) {
-	if len(cidSlice) != len(titleSlice) {
-		return tool.ErrParams
-	}
-	for index, cid := range cidSlice {
+func (c *Client) Add(needInsertToColumn map[string]string, uid int64) (err error) {
+	for cid, title := range needInsertToColumn {
 		col := &column.Column{
 			Cid:          cid,
-			Title:        titleSlice[index],
+			Title:        title,
 			CoverImg:     "https://s21.ax1x.com/2024/07/05/pkRgyT0.jpg",
 			Summary:      "",
 			FrontDisplay: "1",
@@ -38,8 +34,8 @@ func (c *Client) Add(cidSlice, titleSlice []string, uid int64) (err error) {
 	return
 }
 
-func Add(cidSlice, titleSlice []string, uid int64) (err error) {
-	return defaultClient.Add(cidSlice, titleSlice, uid)
+func Add(needInsertToColumn map[string]string, uid int64) (err error) {
+	return defaultClient.Add(needInsertToColumn, uid)
 }
 
 func init() {
