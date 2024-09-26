@@ -32,7 +32,7 @@ func (m *Manager) Add(i *InvertedIndex) error {
 	now := time.Now()
 	i.CreateTime = now
 	i.UpdateTime = now
-	if err := m.master(BuildPrimaryKey(i.Typ, i.AttrValue)).Create(i).Error; err != nil {
+	if err := m.master(buildKey(i.Typ, i.AttrValue)).Create(i).Error; err != nil {
 		return err
 	}
 	return nil
@@ -42,18 +42,19 @@ func (m *Manager) Update(typ, attrValue string, index string) error {
 	if typ == "" || attrValue == "" || index == "" {
 		return tool.ErrParams
 	}
-	return m.master(BuildPrimaryKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Update("index", index).Error
+	updateVal := map[string]interface{}{"index": index, "update_time": time.Now}
+	return m.master(buildKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Updates(updateVal).Error
 }
 
-func (m *Manager) Get(typ, attrValue string) (*InvertedIndex, error) {
+func (m *Manager) Get(typ, attrValue string) (i []*InvertedIndex, err error) {
 	if typ == "" || attrValue == "" {
 		return nil, tool.ErrParams
 	}
-	i := &InvertedIndex{}
-	if err := m.slave(BuildPrimaryKey(i.Typ, i.AttrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).First(i).Error; err != nil {
+	i = []*InvertedIndex{}
+	if err = m.slave(buildKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Find(&i).Error; err != nil {
 		return nil, err
 	}
-	if i.Index == "" {
+	if len(i) == 0 {
 		return nil, errors.New("record not found")
 	}
 	return i, nil

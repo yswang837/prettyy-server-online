@@ -9,22 +9,22 @@ import (
 const (
 	tableNum    = 2
 	tablePrefix = "inverted_index_"
+	TypEmailUid = "1" // 通过email查uid
+	TypUidAid   = "2" // 通过uid查aid
+	TypUidCid   = "3" // 通过uid查cid
 )
 
-// typ值说明
-// 1: email -> uid
-// 2: uid -> aid
-
-// InvertedIndex 面向数据库，联合主键(attr_value, number)
+// InvertedIndex 面向数据库
 type InvertedIndex struct {
-	Typ        string    `json:"typ"`         // 见typ值说明
-	AttrValue  string    `json:"attr_value"`  // 见typ值说明
-	Index      string    `json:"index"`       // 索引值
+	Typ        string    `json:"typ"`         // 类型，将上方常量定义
+	AttrValue  string    `json:"attr_value"`  // 属性值，将上方常量定义
+	Index      string    `json:"index"`       // 想要查询的值
 	CreateTime time.Time `json:"create_time"` // 创建时间
 	UpdateTime time.Time `json:"update_time"` // 更新时间，可用于换绑邮箱，换绑手机号等，预留功能
 }
 
-func BuildPrimaryKey(Typ, AttrValue string) string {
+// buildKey 通过typ和attr_value作为索引表名的依据
+func buildKey(Typ, AttrValue string) string {
 	if Typ == "" || AttrValue == "" {
 		return ""
 	}
@@ -32,7 +32,7 @@ func BuildPrimaryKey(Typ, AttrValue string) string {
 }
 
 func (i *InvertedIndex) TableName() string {
-	return tablePrefix + tool.Crc(BuildPrimaryKey(i.Typ, i.AttrValue), tableNum)
+	return tablePrefix + tool.Crc(buildKey(i.Typ, i.AttrValue), tableNum)
 }
 
 func (i *InvertedIndex) String() string {

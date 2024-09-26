@@ -98,10 +98,9 @@ CREATE TABLE `user_0` (
 CREATE TABLE `inverted_index_0` (
   `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
-  `index` varchar(8192) NOT NULL DEFAULT '' COMMENT 'index',
+  `index` varchar(64) NOT NULL DEFAULT '' COMMENT 'index',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
-  PRIMARY KEY (`typ`,`attr_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `article_0` (
