@@ -46,12 +46,16 @@ func (m *Manager) Update(typ, attrValue string, index string) error {
 	return m.master(buildKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Updates(updateVal).Error
 }
 
-func (m *Manager) Get(typ, attrValue string) (i []*InvertedIndex, err error) {
+func (m *Manager) Get(typ, attrValue, index string) (i []*InvertedIndex, err error) {
 	if typ == "" || attrValue == "" {
 		return nil, tool.ErrParams
 	}
 	i = []*InvertedIndex{}
-	if err = m.slave(buildKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue)).Find(&i).Error; err != nil {
+	db := m.slave(buildKey(typ, attrValue))
+	if index != "" {
+		db.Scopes(withIndex(index))
+	}
+	if err = db.Scopes(withTyp(typ), withAttrValue(attrValue)).Find(&i).Error; err != nil {
 		return nil, err
 	}
 	if len(i) == 0 {
@@ -89,5 +93,11 @@ func withAttrValue(attrValue string) func(tx *gorm.DB) *gorm.DB {
 func withTyp(typ string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
 		return tx.Where("typ = ?", typ)
+	}
+}
+
+func withIndex(index string) func(tx *gorm.DB) *gorm.DB {
+	return func(tx *gorm.DB) *gorm.DB {
+		return tx.Where("index = ?", index)
 	}
 }

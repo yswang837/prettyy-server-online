@@ -4,12 +4,10 @@ import (
 	"errors"
 	invertedIndex "prettyy-server-online/data/inverted-index"
 	"prettyy-server-online/utils/tool"
-	"time"
 )
 
 type Client struct {
-	manager      *invertedIndex.Manager
-	cacheManager *invertedIndex.ManagerRedis
+	manager *invertedIndex.Manager
 }
 
 var defaultClient *Client
@@ -19,64 +17,31 @@ func NewClient() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	cache, err := invertedIndex.NewManagerRedis()
-	if err != nil {
-		return nil, err
-	}
-	return &Client{manager: manager, cacheManager: cache}, nil
+	return &Client{manager: manager}, nil
 }
 func Get(typ, attrValue string) ([]*invertedIndex.InvertedIndex, error) {
-	return defaultClient.Get(typ, attrValue)
+	return defaultClient.Get(typ, attrValue, "")
 }
 
-func (c *Client) Get(typ, attrValue string) ([]*invertedIndex.InvertedIndex, error) {
+func (c *Client) IsExist(typ, attrValue, index string) bool {
+	ss, _ := c.Get(typ, attrValue, index)
+	return len(ss) > 0
+}
+
+func IsExist(typ, attrValue, index string) bool {
+	return defaultClient.IsExist(typ, attrValue, index)
+}
+
+func (c *Client) Get(typ, attrValue, index string) ([]*invertedIndex.InvertedIndex, error) {
 	if typ == "" || attrValue == "" {
 		return nil, tool.ErrParams
 	}
 	// key 由 typ和attr_value拼接而成
-	i, err := c.manager.Get(typ, attrValue)
+	i, err := c.manager.Get(typ, attrValue, index)
 	if err != nil {
 		return nil, errors.New("get inverted index from mysql failed: " + err.Error())
 	}
 	return i, nil
-}
-
-// UpdateAid 其实是追加aid
-func UpdateAid(typ, attrValue, aid string) error {
-	return defaultClient.UpdateAid(typ, attrValue, aid)
-}
-
-func (c *Client) UpdateAid(typ, attrValue, aid string) error {
-	if typ == "" || attrValue == "" || aid == "" {
-		return tool.ErrParams
-	}
-	m := map[string]interface{}{
-		"index":       aid,
-		"update_time": time.Now().Format(tool.DefaultDateTimeLayout),
-	}
-	if _, err := c.cacheManager.HMSet(typ+attrValue, m); err != nil {
-		return errors.New("set inverted index to redis failed: " + err.Error())
-	}
-	return c.manager.Update(typ, attrValue, aid)
-}
-
-// UpdateCid 其实是追加cid
-func UpdateCid(typ, attrValue, cid string) error {
-	return defaultClient.UpdateCid(typ, attrValue, cid)
-}
-
-func (c *Client) UpdateCid(typ, attrValue, cid string) error {
-	if typ == "" || attrValue == "" || cid == "" {
-		return tool.ErrParams
-	}
-	m := map[string]interface{}{
-		"index":       cid,
-		"update_time": time.Now().Format(tool.DefaultDateTimeLayout),
-	}
-	if _, err := c.cacheManager.HMSet(typ+attrValue, m); err != nil {
-		return errors.New("set inverted index to redis failed: " + err.Error())
-	}
-	return c.manager.Update(typ, attrValue, cid)
 }
 
 func Add(i *invertedIndex.InvertedIndex) (err error) {

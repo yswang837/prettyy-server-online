@@ -20,7 +20,6 @@ import (
 // 2000120
 
 const (
-	indexAidTyp   = "2" // uid->aid
 	indexCidTyp   = "3"
 	articlePrefix = "AA"
 	columnPrefix  = "AB"
@@ -59,21 +58,12 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
-	// 先查反向索引，查到了就追加aid，查不到就添加aid
-	// 向反向索引中添加uid->aid1,aid2,...的映射，以便在开启分表后，内容管理页面查询当前用户的文章
+	// 先查反向索引，查不到就添加uid->aid,以便在开启分表后，内容管理页面查询当前用户的文章
 	uid := strconv.FormatInt(params.Uid, 10)
-	idba, _ := invertedIndex2.Get(indexAidTyp, uid)
-	if idba == nil {
-		i := &invertedIndex.InvertedIndex{Typ: indexAidTyp, AttrValue: uid, Index: a.Aid}
+	if !invertedIndex2.IsExist(invertedIndex.TypUidAid, uid, a.Aid) {
+		i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidAid, AttrValue: uid, Index: a.Aid}
 		if err := invertedIndex2.Add(i); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
-			return
-		}
-	} else {
-		// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430篇文章
-		idba.Index = idba.Index + "," + a.Aid
-		if err := invertedIndex2.UpdateAid(indexAidTyp, uid, idba.Index); err != nil {
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000123, Message: "更新文章的反向索引失败"})
 			return
 		}
 	}
@@ -100,25 +90,14 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		if err := column.Add(needInsertToColumn, params.Uid); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
 		}
-		// 维护反正索引
-		idbc, _ := invertedIndex2.Get(indexCidTyp, uid)
-		var cidSlice []string
+		// 维护uid->cid的反向索引表
 		for cid := range needInsertToColumn {
-			cidSlice = append(cidSlice, cid)
-		}
-		cidStr := strings.Join(cidSlice, ",")
-		if idbc == nil {
-			i := &invertedIndex.InvertedIndex{Typ: indexCidTyp, AttrValue: uid, Index: cidStr}
-			if err := invertedIndex2.Add(i); err != nil {
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
-				return
-			}
-		} else {
-			// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430个专栏
-			idbc.Index = idbc.Index + "," + cidStr
-			if err := invertedIndex2.UpdateCid(indexCidTyp, uid, idbc.Index); err != nil {
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000127, Message: "更新专栏的反向索引失败"})
-				return
+			if !invertedIndex2.IsExist(invertedIndex.TypUidCid, uid, cid) {
+				i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidCid, AttrValue: uid, Index: cid}
+				if err := invertedIndex2.Add(i); err != nil {
+					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
+					return
+				}
 			}
 		}
 	}
