@@ -112,7 +112,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		} else {
 			// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430个专栏
 			idbc.Index = idbc.Index + "," + cid
-			if err := invertedIndex2.UpdateAid(indexAidTyp, uid, idbc.Index); err != nil {
+			if err := invertedIndex2.UpdateCid(indexCidTyp, uid, idbc.Index); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000127, Message: "更新专栏的反向索引失败"})
 				return
 			}

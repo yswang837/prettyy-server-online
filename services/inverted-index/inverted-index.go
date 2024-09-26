@@ -67,6 +67,25 @@ func (c *Client) UpdateAid(typ, attrValue, aid string) error {
 	return c.manager.Update(typ, attrValue, aid)
 }
 
+// UpdateCid 其实是追加cid
+func UpdateCid(typ, attrValue, cid string) error {
+	return defaultClient.UpdateCid(typ, attrValue, cid)
+}
+
+func (c *Client) UpdateCid(typ, attrValue, cid string) error {
+	if typ == "" || attrValue == "" || cid == "" {
+		return tool.ErrParams
+	}
+	m := map[string]interface{}{
+		"index":       cid,
+		"update_time": time.Now().Format(tool.DefaultDateTimeLayout),
+	}
+	if _, err := c.cacheManager.HMSet(typ+attrValue, m); err != nil {
+		return errors.New("set inverted index to redis failed: " + err.Error())
+	}
+	return c.manager.Update(typ, attrValue, cid)
+}
+
 func Add(i *invertedIndex.InvertedIndex) (err error) {
 	return defaultClient.Add(i)
 }
