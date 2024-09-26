@@ -8,9 +8,11 @@ import (
 	article2 "prettyy-server-online/data/article"
 	invertedIndex "prettyy-server-online/data/inverted-index"
 	"prettyy-server-online/services/article"
+	"prettyy-server-online/services/column"
 	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"strconv"
+	"strings"
 )
 
 // PublishArticle 发表文章
@@ -18,7 +20,10 @@ import (
 // 2000120
 
 const (
-	indexTyp = "2"
+	indexAidTyp   = "2" // uid->aid
+	indexCidTyp   = "3"
+	articlePrefix = "AA"
+	columnPrefix  = "AB"
 )
 
 type articleParams struct {
@@ -28,6 +33,7 @@ type articleParams struct {
 	Summary    string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
 	Visibility string `json:"visibility" form:"visibility"`                  // 文章的可见性，默认全部可见 "1"-全部可见 "2"-VIP可见 "3"-粉丝可见 "4"-仅我可见
 	Tags       string `json:"tags" form:"tags" binding:"required"`           // 文章标签，以英文逗号分隔，最多10个标签，由用户发文的时候打标签
+	Column     string `json:"column" form:"column"`                          // 文章所属专栏，默认为空，非空则以英文逗号分隔，最多4个专栏，由用户发文的时候指定
 	Typ        string `json:"typ" form:"typ"`                                // 文章类型，默认原创，"1"-原创 "2"-转载 "3"-翻译 "4"-其他
 	Uid        int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
 }
@@ -39,7 +45,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		return
 	}
 	a := &article2.Article{
-		Aid:        xzfSnowflake.GenID("AA"),
+		Aid:        xzfSnowflake.GenID(articlePrefix),
 		Title:      params.Title,
 		Content:    tool.Base64Encode(params.Content),
 		CoverImg:   params.CoverImg,
@@ -56,19 +62,60 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 	// 先查反向索引，查到了就追加aid，查不到就添加aid
 	// 向反向索引中添加uid->aid1,aid2,...的映射，以便在开启分表后，内容管理页面查询当前用户的文章
 	uid := strconv.FormatInt(params.Uid, 10)
-	idb, _ := invertedIndex2.Get(indexTyp, uid)
-	if idb == nil {
-		i := &invertedIndex.InvertedIndex{Typ: indexTyp, AttrValue: uid, Index: a.Aid}
+	idba, _ := invertedIndex2.Get(indexAidTyp, uid)
+	if idba == nil {
+		i := &invertedIndex.InvertedIndex{Typ: indexAidTyp, AttrValue: uid, Index: a.Aid}
 		if err := invertedIndex2.Add(i); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
 			return
 		}
 	} else {
 		// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430篇文章
-		idb.Index = idb.Index + "," + a.Aid
-		if err := invertedIndex2.UpdateAid(indexTyp, uid, idb.Index); err != nil {
+		idba.Index = idba.Index + "," + a.Aid
+		if err := invertedIndex2.UpdateAid(indexAidTyp, uid, idba.Index); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000123, Message: "更新文章的反向索引失败"})
 			return
+		}
+	}
+
+	// 维护专栏表
+	var cidSlice []string
+	var titleSlice []string
+	if params.Column != "" {
+		columns := strings.Split(params.Column, ",")
+		if len(columns) <= 0 || len(columns) >= 5 {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
+			return
+		}
+		for _, col := range columns {
+			cidSlice = append(cidSlice, xzfSnowflake.GenID(columnPrefix))
+			titleSlice = append(titleSlice, col)
+		}
+		if len(cidSlice) != 0 {
+			if err := column.Add(cidSlice, titleSlice, params.Uid); err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
+				return
+			}
+		}
+	}
+
+	// 维护uid和cid的关系
+	cid := strings.Join(cidSlice, ",")
+	if cid != "" {
+		idbc, _ := invertedIndex2.Get(indexCidTyp, uid)
+		if idbc == nil {
+			i := &invertedIndex.InvertedIndex{Typ: indexCidTyp, AttrValue: uid, Index: cid}
+			if err := invertedIndex2.Add(i); err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
+				return
+			}
+		} else {
+			// 在反向索引的index字段中，设置的最大长度是varchar(8192),一个用户最多430个专栏
+			idbc.Index = idbc.Index + "," + cid
+			if err := invertedIndex2.UpdateAid(indexAidTyp, uid, idbc.Index); err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000127, Message: "更新专栏的反向索引失败"})
+				return
+			}
 		}
 	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
