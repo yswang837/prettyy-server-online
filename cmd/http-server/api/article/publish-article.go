@@ -32,7 +32,7 @@ type articleParams struct {
 	Summary    string `json:"summary" form:"summary" binding:"required"`     // 文章摘要
 	Visibility string `json:"visibility" form:"visibility"`                  // 文章的可见性，默认全部可见 "1"-全部可见 "2"-VIP可见 "3"-粉丝可见 "4"-仅我可见
 	Tags       string `json:"tags" form:"tags" binding:"required"`           // 文章标签，以英文逗号分隔，最多10个标签，由用户发文的时候打标签
-	Column     string `json:"column" form:"column"`                          // 文章所属专栏，默认为空，非空则以英文逗号分隔，最多4个专栏，由用户发文的时候指定，格式：cid1,title1,"",title2,cid3,title3
+	Column     string `json:"column" form:"column"`                          // 文章所属专栏，默认为空，非空则以英文逗号分隔，最多3个专栏，由用户发文的时候指定，格式：cid1,title1,"",title2,cid3,title3
 	Typ        string `json:"typ" form:"typ"`                                // 文章类型，默认原创，"1"-原创 "2"-转载 "3"-翻译 "4"-其他
 	Uid        int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
 }
@@ -74,7 +74,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 	if params.Column != "" {
 		columns := strings.Split(params.Column, ",")
 		length := len(columns)
-		if length == 0 || length >= 9 || length%2 != 0 {
+		if length == 0 || length >= 7 || length%2 != 0 {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
 			return
 		}
