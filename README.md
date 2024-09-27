@@ -96,11 +96,13 @@ CREATE TABLE `user_0` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `inverted_index_0` (
+  `id` int(11) NOT NULL NOT NULL AUTO_INCREMENT COMMENT 'id',
   `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
   `index` varchar(64) NOT NULL DEFAULT '' COMMENT 'index',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
+  PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
 
 CREATE TABLE `article_0` (
@@ -137,14 +139,7 @@ CREATE TABLE `column_0` (
     PRIMARY KEY (`cid`),
     UNIQUE (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
-CREATE TABLE `article_column_0` (
-    `aid` varchar(32) NOT NULL DEFAULT '' COMMENT 'article id',
-    `cid` varchar(32) NOT NULL DEFAULT '' COMMENT 'column id',
-    `uid` int(11) NOT NULL DEFAULT 0 COMMENT 'user id',
-    `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
-    `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
-    PRIMARY KEY (`aid`,`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED;
+
 ```
 
 

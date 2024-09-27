@@ -6,7 +6,6 @@ import (
 	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -84,7 +83,12 @@ func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ s
 		if err != nil {
 			return nil, 0, err
 		}
-		aids := strings.Split(iList.Index, ",")
+		var aids []string
+		for _, i := range iList {
+			if i.Index != "" {
+				aids = append(aids, i.Index)
+			}
+		}
 		if len(aids) <= 0 {
 			return nil, 0, errors.New("inverted index not found")
 		}

@@ -89,6 +89,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		// 维护专栏表
 		if err := column.Add(needInsertToColumn, params.Uid); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
+			return
 		}
 		// 维护uid->cid的反向索引表
 		for cid := range needInsertToColumn {
