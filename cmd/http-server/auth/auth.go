@@ -32,6 +32,7 @@ var (
 		conf.URLGetArticleDetail:    {allowCaller: hashset.New("test", "web")},
 		conf.URLDelArticle:          {allowCaller: hashset.New("test", "web")},
 		conf.URLGetUserInfoByAid:    {allowCaller: hashset.New("test", "web")},
+		conf.URLGetColumnList:       {allowCaller: hashset.New("test", "web")},
 		conf.URLFileUpload:          {allowCaller: hashset.New("test", "web")},
 	}
 	callerPin = map[string]string{

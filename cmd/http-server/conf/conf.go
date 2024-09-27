@@ -17,5 +17,6 @@ const (
 	URLGetArticleDetail    = "/article/detail"
 	URLDelArticle          = "/article/del"
 	URLGetUserInfoByAid    = "/article/get-user-info-by-aid"
+	URLGetColumnList       = "/column/list"
 	URLFileUpload          = "/file/upload"
 )

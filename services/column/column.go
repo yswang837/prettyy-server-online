@@ -38,6 +38,14 @@ func Add(needInsertToColumn map[string]string, uid int64) (err error) {
 	return defaultClient.Add(needInsertToColumn, uid)
 }
 
+func Get(cid string) (*column.Column, error) {
+	return defaultClient.Get(cid)
+}
+
+func (c *Client) Get(cid string) (col *column.Column, err error) {
+	return c.manager.Get(cid)
+}
+
 func init() {
 	var err error
 	defaultClient, err = NewClient()

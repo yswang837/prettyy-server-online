@@ -5,6 +5,7 @@ import (
 	"os"
 	"prettyy-server-online/cmd/http-server/api/article"
 	"prettyy-server-online/cmd/http-server/api/base"
+	"prettyy-server-online/cmd/http-server/api/column"
 	"prettyy-server-online/cmd/http-server/api/common"
 	"prettyy-server-online/cmd/http-server/api/user"
 	"prettyy-server-online/cmd/http-server/auth"
@@ -27,7 +28,8 @@ func main() {
 		base.NewServer(),
 		user.NewServer(),
 		article.NewServer(),
-		common.NewServer())
+		common.NewServer(),
+		column.NewServer())
 	container.AddServer(httpServer)
 	// 监控服务
 	metricsServer := ginConsulRegister.NewGinServer("blog-service-metrics")
