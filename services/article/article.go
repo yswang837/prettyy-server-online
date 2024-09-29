@@ -116,10 +116,17 @@ func articleToMap(a *article.Article) map[string]interface{} {
 	m["content"] = a.Content
 	m["cover_img"] = a.CoverImg
 	m["summary"] = a.Summary
-	m["visibility"] = a.Visibility
 	m["tags"] = a.Tags
+	m["visibility"] = a.Visibility
 	m["typ"] = a.Typ
 	m["uid"] = a.Uid
+	m["share_num"] = a.ShareNum
+	m["comment_num"] = a.CommentNum
+	m["like_num"] = a.LikeNum
+	m["read_num"] = a.ReadNum
+	m["collect_num"] = a.CollectNum
+	m["uid"] = a.Uid
+	m["status"] = a.Status
 	m["create_time"] = a.CreateTime.Format(tool.DefaultDateTimeLayout)
 	m["update_time"] = a.UpdateTime.Format(tool.DefaultDateTimeLayout)
 	return m
@@ -132,6 +139,8 @@ func mapToArticle(m map[string]string) *article.Article {
 	rn, _ := strconv.Atoi(m["read_num"])
 	cn, _ := strconv.Atoi(m["comment_num"])
 	con, _ := strconv.Atoi(m["collect_num"])
+	sn, _ := strconv.Atoi(m["share_num"])
+	ln, _ := strconv.Atoi(m["like_num"])
 	uid, _ := strconv.Atoi(m["uid"])
 	a := &article.Article{}
 	a.Aid = m["aid"]
@@ -139,10 +148,16 @@ func mapToArticle(m map[string]string) *article.Article {
 	a.Content = tool.Base64Decode(m["content"])
 	a.CoverImg = m["cover_img"]
 	a.Summary = m["summary"]
-	a.ReadNum = rn
+	a.Tags = m["tags"]
+	a.Visibility = m["visibility"]
+	a.Typ = m["typ"]
+	a.ShareNum = sn
 	a.CommentNum = cn
+	a.LikeNum = ln
+	a.ReadNum = rn
 	a.CollectNum = con
 	a.Uid = int64(uid)
+	a.Status = m["status"]
 	a.CreateTime = tool.StringToTime(m["create_time"])
 	a.UpdateTime = tool.StringToTime(m["update_time"])
 	return a
