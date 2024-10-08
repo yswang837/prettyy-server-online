@@ -20,7 +20,6 @@ import (
 // 2000120
 
 const (
-	indexCidTyp   = "3"
 	articlePrefix = "AA"
 	columnPrefix  = "AB"
 )
