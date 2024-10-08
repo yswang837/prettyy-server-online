@@ -15,7 +15,7 @@ const (
 )
 
 type extractSummaryParams struct {
-	Summary string `json:"summary" form:"summary" binding:"required"` // 文章摘要
+	Content string `json:"content" form:"content" binding:"required"` // 文章内容，用于提取摘要
 }
 
 type extractSummaryResp struct {
@@ -41,7 +41,7 @@ func (s *Server) ExtractSummary(ctx *gin.Context) {
 	}
 	query := map[string]interface{}{
 		"model":  "qwen2:0.5b",
-		"prompt": params.Summary,
+		"prompt": params.Content,
 		"stream": false,
 	}
 	resp := &extractSummaryResp{}
