@@ -40,7 +40,7 @@ func (s *Server) ExtractSummary(ctx *gin.Context) {
 		return
 	}
 	query := map[string]interface{}{
-		"model":  "qwen2:0.5b",
+		"model":  "qwen2.5:0.5b",
 		"prompt": params.Content,
 		"stream": false,
 	}
