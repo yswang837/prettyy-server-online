@@ -11,7 +11,7 @@ import (
 // 4000380
 
 const (
-	qwenURL = "http://10.2.8.116:11434/api/generate"
+	qwenURL = "http://120.26.203.121:11434/api/generate"
 )
 
 type extractSummaryParams struct {
