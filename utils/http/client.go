@@ -9,9 +9,8 @@ import (
 
 func NewClient(handler ...Handler) *resty.Client {
 	client := resty.New()
-	client.SetTimeout(time.Second * 10)
+	client.SetTimeout(time.Second)
 	client.OnAfterResponse(MetricsMiddleware(handler...)) //注册插件
-
 	return client
 }
 

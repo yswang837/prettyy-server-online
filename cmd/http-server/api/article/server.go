@@ -7,6 +7,7 @@ import (
 	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
 	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	"prettyy-server-online/utils/http"
+	"time"
 )
 
 // Server 绑定所有文章相关的服务
@@ -20,6 +21,7 @@ func NewServer() *Server {
 
 func (s *Server) Init() (err error) {
 	s.client = http.NewClient()
+	s.client.SetTimeout(time.Second * 20) // 调用通义千问模型提取摘要，比较慢，设置20秒超时
 	return xzfSnowflake.Init("2024-03-09", "1")
 }
 
