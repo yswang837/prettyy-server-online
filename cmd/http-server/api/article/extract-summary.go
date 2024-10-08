@@ -50,6 +50,6 @@ func (s *Server) ExtractSummary(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000381, Message: "调用通义千问出错"})
 		return
 	}
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000380, Message: "调用qwen2:0.5b成功", Result: resp.Response})
+	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000380, Message: "调用qwen2.5:0.5b成功", Result: resp.Response})
 	return
 }
