@@ -26,6 +26,10 @@ func (s *Server) ArticleDetail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000161, Message: "获取文章详情失败"})
 		return
 	}
+	if err = article.IncrReadNum(params.Aid); err != nil {
+		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000162, Message: "文章阅读数+1失败"})
+		return
+	}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000160, Message: "获取文章详情成功", Result: articleDetail})
 	return
 }

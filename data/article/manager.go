@@ -39,6 +39,13 @@ func (m *Manager) Add(a *Article) error {
 	return nil
 }
 
+func (m *Manager) IncrReadNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	return m.master(aid).Scopes(withAid(aid)).Update("read_num", gorm.Expr("read_num + ?", 1)).Error
+}
+
 func (m *Manager) Get(aid string) (*Article, error) {
 	if aid == "" {
 		return nil, tool.ErrParams

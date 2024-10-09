@@ -38,6 +38,12 @@ func (c *Client) Add(a *article.Article) (err error) {
 	if a.Typ == "" {
 		a.Typ = "1"
 	}
+	// 发文的时候，这些数都是0
+	a.ShareNum = 0
+	a.CommentNum = 0
+	a.LikeNum = 0
+	a.ReadNum = 0
+	a.CollectNum = 0
 	if err = c.manager.Add(a); err != nil {
 		return errors.New("add article to mysql failed: " + err.Error())
 	}
@@ -47,6 +53,29 @@ func (c *Client) Add(a *article.Article) (err error) {
 		return errors.New("set article to redis failed: " + err.Error())
 	}
 	return
+}
+
+func IncrReadNum(aid string) error {
+	return defaultClient.IncrReadNum(aid)
+}
+
+func (c *Client) IncrReadNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	a, err := c.Get(aid)
+	if err != nil {
+		return err
+	}
+	a.ReadNum++
+	m := map[string]interface{}{"read_num": a.ReadNum}
+	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+		return errors.New("redis incr read num failed: " + err.Error())
+	}
+	if err = c.manager.IncrReadNum(aid); err != nil {
+		return errors.New("mysql incr read num failed: " + err.Error())
+	}
+	return nil
 }
 
 func (c *Client) Get(aid string) (*article.Article, error) {
@@ -119,7 +148,6 @@ func articleToMap(a *article.Article) map[string]interface{} {
 	m["tags"] = a.Tags
 	m["visibility"] = a.Visibility
 	m["typ"] = a.Typ
-	m["uid"] = a.Uid
 	m["share_num"] = a.ShareNum
 	m["comment_num"] = a.CommentNum
 	m["like_num"] = a.LikeNum
