@@ -5,6 +5,8 @@ import (
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	invertedIndex "prettyy-server-online/data/inverted-index"
+	"prettyy-server-online/services/article"
+	invertedIndex2 "prettyy-server-online/services/inverted-index"
 )
 
 // Like 点赞文章
@@ -36,46 +38,60 @@ func (s *Server) ClickLikeCollect(ctx *gin.Context) {
 	isLikeType := params.Typ == invertedIndex.TypMuidLikeSuidAid
 	attrValue := params.MUid + "," + params.Aid
 	resp := &clickLikeCollectResp{}
-	isAddClick := false
-	//if !invertedIndex2.IsExist(params.Typ, attrValue, params.SUid) {
-	//	isAddClick = true
-	//	i := &invertedIndex.InvertedIndex{Typ: params.Typ, AttrValue: attrValue, Index: params.SUid}
-	//	if err := invertedIndex2.Add(i); err != nil {
-	//		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000402, Message: "添加反向索引失败"})
-	//		return
-	//	}
-	//}
-	//if err := invertedIndex2.Delete(params.Typ, attrValue, params.SUid); err != nil {
-	//	ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000403, Message: "删除反向索引失败"})
-	//	return
-	//}
-	//if isLikeType {
-	//	likeNum, err := article.UpdateLikeNum(params.Aid, isAddClick)
-	//	if err != nil {
-	//		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000404, Message: "更新点赞数失败"})
-	//		return
-	//	}
-	//	resp.LikeNum = likeNum
-	//	if isAddClick {
-	//		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "点赞成功", Result: resp})
-	//		return
-	//	} else {
-	//		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "取消点赞成功", Result: resp})
-	//		return
-	//	}
-	//} else {
-	//	collectNum, err := article.UpdateCollectNum(params.Aid, isAddClick)
-	//	if err != nil {
-	//		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000404, Message: "更新收藏数失败"})
-	//		return
-	//	}
-	//	resp.CollectNum = collectNum
-	//	if isAddClick {
-	//		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "收藏成功", Result: resp})
-	//		return
-	//	} else {
-	//		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "取消收藏成功", Result: resp})
-	//		return
-	//	}
-	//}
+	if invertedIndex2.IsExist(params.Typ, attrValue, params.SUid) {
+		// 说明要取消点赞或收藏，删除反向索引，并维护文章表的点赞数或者收藏数
+		if err := invertedIndex2.Delete(params.Typ, attrValue, params.SUid); err != nil {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000402, Message: "删除反向索引失败"})
+			return
+		}
+		if isLikeType {
+			// 取消点赞类型
+			likeNum, err := article.UpdateLikeNum(params.Aid, false)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000403, Message: "更新点赞数失败"})
+				return
+			}
+			resp.LikeNum = likeNum
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "取消点赞成功", Result: resp})
+			return
+		} else {
+			// 取消收藏类型
+			collectNum, err := article.UpdateCollectNum(params.Aid, false)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000404, Message: "更新收藏数失败"})
+				return
+			}
+			resp.CollectNum = collectNum
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000401, Message: "取消收藏成功", Result: resp})
+			return
+		}
+	} else {
+		// 说明要点赞或收藏，添加反向索引，并维护文章表的点赞数或者收藏数
+		i := &invertedIndex.InvertedIndex{Typ: params.Typ, AttrValue: attrValue, Index: params.SUid}
+		if err := invertedIndex2.Add(i); err != nil {
+			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000405, Message: "添加反向索引失败"})
+			return
+		}
+		if isLikeType {
+			// 点赞类型
+			likeNum, err := article.UpdateLikeNum(params.Aid, true)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000406, Message: "更新点赞数失败"})
+				return
+			}
+			resp.LikeNum = likeNum
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000402, Message: "点赞成功", Result: resp})
+			return
+		} else {
+			// 收藏类型
+			collectNum, err := article.UpdateCollectNum(params.Aid, true)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000407, Message: "更新收藏数失败"})
+				return
+			}
+			resp.CollectNum = collectNum
+			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000403, Message: "收藏成功", Result: resp})
+			return
+		}
+	}
 }
