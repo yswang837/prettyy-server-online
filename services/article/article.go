@@ -3,6 +3,7 @@ package article
 import (
 	"errors"
 	"prettyy-server-online/data/article"
+	invertedIndex "prettyy-server-online/data/inverted-index"
 	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"strconv"
@@ -101,6 +102,72 @@ func Get(aid string) (*article.Article, error) {
 	return defaultClient.Get(aid)
 }
 
+func UpdateLikeNum(aid string, isAddClick bool) (int, error) {
+	return defaultClient.UpdateLikeNum(aid, isAddClick)
+}
+
+func (c *Client) UpdateLikeNum(aid string, isAddClick bool) (int, error) {
+	if aid == "" {
+		return 0, tool.ErrParams
+	}
+	a, err := c.Get(aid)
+	if err != nil {
+		return 0, err
+	}
+	if isAddClick {
+		a.LikeNum++
+	} else {
+		a.LikeNum--
+	}
+	m := map[string]interface{}{"like_num": a.LikeNum}
+	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+		return 0, errors.New("redis update like num failed: " + err.Error())
+	}
+	if isAddClick {
+		if err = c.manager.IncrLikeNum(aid); err != nil {
+			return 0, errors.New("mysql incr like num failed: " + err.Error())
+		}
+	} else {
+		if err = c.manager.DeIncrLikeNum(aid); err != nil {
+			return 0, errors.New("mysql deincr like num failed: " + err.Error())
+		}
+	}
+	return a.LikeNum, nil
+}
+
+func UpdateCollectNum(aid string, isAddClick bool) (int, error) {
+	return defaultClient.UpdateCollectNum(aid, isAddClick)
+}
+
+func (c *Client) UpdateCollectNum(aid string, isAddClick bool) (int, error) {
+	if aid == "" {
+		return 0, tool.ErrParams
+	}
+	a, err := c.Get(aid)
+	if err != nil {
+		return 0, err
+	}
+	if isAddClick {
+		a.CollectNum++
+	} else {
+		a.CollectNum--
+	}
+	m := map[string]interface{}{"collect_num": a.CollectNum}
+	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+		return 0, errors.New("redis update collect num failed: " + err.Error())
+	}
+	if isAddClick {
+		if err = c.manager.IncrCollectNum(aid); err != nil {
+			return 0, errors.New("mysql incr collect num failed: " + err.Error())
+		}
+	} else {
+		if err = c.manager.DeIncrCollectNum(aid); err != nil {
+			return 0, errors.New("mysql deincr collect num failed: " + err.Error())
+		}
+	}
+	return a.CollectNum, nil
+}
+
 func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, int64, error) {
 	return defaultClient.GetArticleList(uid, page, pageSize, visibility, typ)
 }
@@ -108,7 +175,7 @@ func GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*a
 func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ string) ([]*article.Article, int64, error) {
 	// 如果uid合法，则通过uid查询aid列表，否则随机查询一个article表，前者用于管理我的文章，后者用于主页显示，后者后期可优化成推荐
 	if uid >= 10000 {
-		iList, err := invertedIndex2.Get("2", strconv.FormatInt(uid, 10))
+		iList, err := invertedIndex2.Get(invertedIndex.TypUidAid, strconv.FormatInt(uid, 10))
 		if err != nil {
 			return nil, 0, err
 		}

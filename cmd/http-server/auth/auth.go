@@ -35,6 +35,7 @@ var (
 		conf.URLGetColumnList:       {allowCaller: hashset.New("test", "web")},
 		conf.URLFileUpload:          {allowCaller: hashset.New("test", "web")},
 		conf.URLExtractSummary:      {allowCaller: hashset.New("test", "web")},
+		conf.URLLikeCollectArticle:  {allowCaller: hashset.New("test", "web")},
 	}
 	callerPin = map[string]string{
 		"test": "098f6bcd4621d373cade4e832627b4f6", // 测试的调用方和pin，

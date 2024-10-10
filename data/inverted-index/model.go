@@ -7,11 +7,13 @@ import (
 )
 
 const (
-	tableNum    = 2
-	tablePrefix = "inverted_index_"
-	TypEmailUid = "1" // 通过email查uid
-	TypUidAid   = "2" // 通过uid查aid
-	TypUidCid   = "3" // 通过uid查cid
+	tableNum              = 2
+	tablePrefix           = "inverted_index_"
+	TypEmailUid           = "1" // 通过email查uid
+	TypUidAid             = "2" // 通过uid查aid
+	TypUidCid             = "3" // 通过uid查cid
+	TypMuidLikeSuidAid    = "4" // 通过muid,aid查suid 点赞类型
+	TypMuidCollectSuidAid = "5" // 通过muid,aid查suid 收藏类型
 )
 
 // InvertedIndex 面向数据库

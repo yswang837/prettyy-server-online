@@ -58,6 +58,20 @@ func (c *Client) Add(i *invertedIndex.InvertedIndex) (err error) {
 	return
 }
 
+func Delete(typ, attrValue string, index string) error {
+	if typ == "" || attrValue == "" || index == "" {
+		return tool.ErrParams
+	}
+	return defaultClient.Delete(typ, attrValue, index)
+}
+
+func (c *Client) Delete(typ, attrValue string, index string) error {
+	if typ == "" || attrValue == "" || index == "" {
+		return tool.ErrParams
+	}
+	return c.manager.Delete(typ, attrValue, index)
+}
+
 func init() {
 	var err error
 	defaultClient, err = NewClient()

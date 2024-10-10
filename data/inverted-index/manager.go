@@ -38,6 +38,13 @@ func (m *Manager) Add(i *InvertedIndex) error {
 	return nil
 }
 
+func (m *Manager) Delete(typ, attrValue string, index string) error {
+	if typ == "" || attrValue == "" || index == "" {
+		return tool.ErrParams
+	}
+	return m.master(buildKey(typ, attrValue)).Scopes(withTyp(typ), withAttrValue(attrValue), withIndex(index)).Delete(&InvertedIndex{}).Error
+}
+
 func (m *Manager) Update(typ, attrValue string, index string) error {
 	if typ == "" || attrValue == "" || index == "" {
 		return tool.ErrParams
