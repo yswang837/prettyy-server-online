@@ -73,7 +73,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		userObj, err := user3.Add(user)
 		if err == nil {
 			// 添加反向索引
-			invertedObj := &invertedIndex.InvertedIndex{AttrValue: p.Email, Typ: invertedIndex.TypEmailUid, Index: strconv.FormatInt(userObj.Uid, 10)}
+			invertedObj := &invertedIndex.InvertedIndex{AttrValue: p.Email, Typ: invertedIndex.TypEmailUid, Idx: strconv.FormatInt(userObj.Uid, 10)}
 			if err = invertedIndex2.Add(invertedObj); err != nil {
 				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 				return
@@ -95,7 +95,7 @@ func (s *Server) LoginRegister(ctx *gin.Context) {
 		return
 	} else {
 		// 已注册，走登录逻辑，在这个逻辑下，一定只有一条，所以取第0个，
-		user, err := user3.GetUser(i[0].Index)
+		user, err := user3.GetUser(i[0].Idx)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "注册成功，但获取用户信息失败"})
 			return

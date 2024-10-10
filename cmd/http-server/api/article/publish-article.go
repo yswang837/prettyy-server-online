@@ -60,7 +60,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 	// 先查反向索引，查不到就添加uid->aid,以便在开启分表后，内容管理页面查询当前用户的文章
 	uid := strconv.FormatInt(params.Uid, 10)
 	if !invertedIndex2.IsExist(invertedIndex.TypUidAid, uid, a.Aid) {
-		i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidAid, AttrValue: uid, Index: a.Aid}
+		i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidAid, AttrValue: uid, Idx: a.Aid}
 		if err := invertedIndex2.Add(i); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
 			return
@@ -93,7 +93,7 @@ func (s *Server) PublishArticle(ctx *gin.Context) {
 		// 维护uid->cid的反向索引表
 		for cid := range needInsertToColumn {
 			if !invertedIndex2.IsExist(invertedIndex.TypUidCid, uid, cid) {
-				i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidCid, AttrValue: uid, Index: cid}
+				i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidCid, AttrValue: uid, Idx: cid}
 				if err := invertedIndex2.Add(i); err != nil {
 					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
 					return

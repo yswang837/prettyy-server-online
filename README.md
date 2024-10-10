@@ -99,7 +99,7 @@ CREATE TABLE `inverted_index_0` (
   `id` int(11) NOT NULL NOT NULL AUTO_INCREMENT COMMENT 'id',
   `typ` varchar(8) NOT NULL DEFAULT '' COMMENT 'typ',
   `attr_value` varchar(64) NOT NULL DEFAULT '' COMMENT 'attr_value',
-  `index` varchar(64) NOT NULL DEFAULT '' COMMENT 'index',
+  `idx` varchar(64) NOT NULL DEFAULT '' COMMENT 'idx',
   `create_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'update time',
   PRIMARY KEY (id)
