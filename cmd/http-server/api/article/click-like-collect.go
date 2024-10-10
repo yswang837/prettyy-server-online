@@ -21,8 +21,8 @@ type clickLikeCollectParams struct {
 }
 
 type clickLikeCollectResp struct {
-	LikeNum    int `json:"like_num,omitempty"`
-	CollectNum int `json:"collect_num,omitempty"`
+	LikeNum    int `json:"like_num"`
+	CollectNum int `json:"collect_num"`
 }
 
 func (s *Server) ClickLikeCollect(ctx *gin.Context) {
@@ -67,7 +67,7 @@ func (s *Server) ClickLikeCollect(ctx *gin.Context) {
 		}
 	} else {
 		// 说明要点赞或收藏，添加反向索引，并维护文章表的点赞数或者收藏数
-		i := &invertedIndex.InvertedIndex{Typ: params.Typ, AttrValue: attrValue, Index: params.SUid}
+		i := &invertedIndex.InvertedIndex{Typ: params.Typ, AttrValue: attrValue, Idx: params.SUid}
 		if err := invertedIndex2.Add(i); err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000405, Message: "添加反向索引失败"})
 			return

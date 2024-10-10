@@ -26,7 +26,7 @@ func NewManager() (*Manager, error) {
 }
 
 func (m *Manager) Add(i *InvertedIndex) error {
-	if i == nil || i.Index == "" || i.AttrValue == "" || i.Typ == "" {
+	if i == nil || i.Idx == "" || i.AttrValue == "" || i.Typ == "" {
 		return tool.ErrParams
 	}
 	now := time.Now()
@@ -105,6 +105,6 @@ func withTyp(typ string) func(tx *gorm.DB) *gorm.DB {
 
 func withIndex(index string) func(tx *gorm.DB) *gorm.DB {
 	return func(tx *gorm.DB) *gorm.DB {
-		return tx.Where("index = ?", index)
+		return tx.Where("idx = ?", index)
 	}
 }

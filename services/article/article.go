@@ -181,8 +181,8 @@ func (c *Client) GetArticleList(uid int64, page, pageSize int, visibility, typ s
 		}
 		var aids []string
 		for _, i := range iList {
-			if i.Index != "" {
-				aids = append(aids, i.Index)
+			if i.Idx != "" {
+				aids = append(aids, i.Idx)
 			}
 		}
 		if len(aids) <= 0 {

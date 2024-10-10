@@ -36,7 +36,7 @@ func (s *Server) ColumnList(ctx *gin.Context) {
 	}
 	result := make(map[string]string)
 	for _, cidInverted := range cidInvertedList {
-		col, err := column.Get(cidInverted.Index)
+		col, err := column.Get(cidInverted.Idx)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000363, Message: "获取专栏数据失败"})
 			return

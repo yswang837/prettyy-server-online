@@ -20,7 +20,7 @@ const (
 type InvertedIndex struct {
 	Typ        string    `json:"typ"`         // 类型，将上方常量定义
 	AttrValue  string    `json:"attr_value"`  // 属性值，将上方常量定义
-	Index      string    `json:"index"`       // 想要查询的值
+	Idx        string    `json:"idx"`         // 想要查询的值，这里不能用index，会和sql关键字冲突
 	CreateTime time.Time `json:"create_time"` // 创建时间
 	UpdateTime time.Time `json:"update_time"` // 更新时间，可用于换绑邮箱，换绑手机号等，预留功能
 }
