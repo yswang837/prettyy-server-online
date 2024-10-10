@@ -47,4 +47,7 @@ func (s *Server) SetRoute(r *gin.Engine) {
 	groupHandler.POST(conf.URLDelArticle, func(context *gin.Context) {
 		s.DelArticle(context)
 	})
+	groupHandler.POST(conf.URLLikeCollectArticle, func(context *gin.Context) {
+		s.ClickLikeCollect(context)
+	})
 }

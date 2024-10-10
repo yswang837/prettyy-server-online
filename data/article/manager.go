@@ -46,6 +46,34 @@ func (m *Manager) IncrReadNum(aid string) error {
 	return m.master(aid).Scopes(withAid(aid)).Update("read_num", gorm.Expr("read_num + ?", 1)).Error
 }
 
+func (m *Manager) IncrLikeNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	return m.master(aid).Scopes(withAid(aid)).Update("like_num", gorm.Expr("like_num + ?", 1)).Error
+}
+
+func (m *Manager) DeIncrLikeNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	return m.master(aid).Scopes(withAid(aid)).Update("like_num", gorm.Expr("like_num - ?", 1)).Error
+}
+
+func (m *Manager) IncrCollectNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	return m.master(aid).Scopes(withAid(aid)).Update("collect_num", gorm.Expr("collect_num + ?", 1)).Error
+}
+
+func (m *Manager) DeIncrCollectNum(aid string) error {
+	if aid == "" {
+		return tool.ErrParams
+	}
+	return m.master(aid).Scopes(withAid(aid)).Update("collect_num", gorm.Expr("collect_num - ?", 1)).Error
+}
+
 func (m *Manager) Get(aid string) (*Article, error) {
 	if aid == "" {
 		return nil, tool.ErrParams
