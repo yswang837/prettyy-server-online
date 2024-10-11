@@ -21,4 +21,6 @@ const (
 	URLLikeCollectArticle  = "/article/like-collect"
 	URLGetColumnList       = "/column/list"
 	URLFileUpload          = "/file/upload"
+	URLSseConnection       = "/sse/connection" // 建立sse连接
+	URLSseSend             = "/sse/send"       // 推送sse消息
 )
