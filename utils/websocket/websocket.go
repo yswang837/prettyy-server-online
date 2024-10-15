@@ -12,4 +12,4 @@ var UpGrader = websocket.Upgrader{
 }
 
 var Clients = make(map[*websocket.Conn]bool)
-var Message = make(chan string)
+var Message = make(chan string, 10)

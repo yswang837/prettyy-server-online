@@ -36,10 +36,10 @@ func (s *Server) SetRoute(r *gin.Engine) {
 	groupHandler.POST(conf.URLFileUpload, func(context *gin.Context) {
 		s.FileUpload(context)
 	})
-	groupHandler.GET(conf.URLWsConnection, func(context *gin.Context) {
+	r.GET(conf.URLWsConnection, func(context *gin.Context) { // 点赞测试，实际应该用groupHandler
 		s.WSConnect(context)
 	})
-	groupHandler.POST(conf.URLLike, func(context *gin.Context) {
+	r.POST(conf.URLLike, func(context *gin.Context) { // 点赞测试，实际应该用groupHandler
 		s.Lick(context)
 	})
 
