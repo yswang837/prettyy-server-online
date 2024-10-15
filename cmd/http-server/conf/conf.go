@@ -21,6 +21,6 @@ const (
 	URLLikeCollectArticle  = "/article/like-collect"
 	URLGetColumnList       = "/column/list"
 	URLFileUpload          = "/file/upload"
-	URLWsConnection        = "/websocket/connection"
+	URLWsConnection        = "/ws"
 	URLLike                = "/like"
 )
