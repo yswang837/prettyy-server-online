@@ -9,6 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/consul/api v1.29.2
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/prometheus/client_golang v1.20.0
