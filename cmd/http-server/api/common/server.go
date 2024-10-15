@@ -39,6 +39,10 @@ func (s *Server) SetRoute(r *gin.Engine) {
 	groupHandler.GET(conf.URLWsConnection, func(context *gin.Context) {
 		s.WSConnect(context)
 	})
+	groupHandler.POST(conf.URLLike, func(context *gin.Context) {
+		s.Lick(context)
+	})
+
 }
 
 func init() {
