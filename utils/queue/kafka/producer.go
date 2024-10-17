@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var rootDir = fmt.Sprintf("%s/conf/kafka/producer/", os.Getenv("PRETTYY_CONF_ROOT"))
+var rootDir = fmt.Sprintf("%s/kafka/", os.Getenv("PRETTYY_CONF_ROOT"))
 
 var (
 	ErrDataType = fmt.Errorf("unsupported type")

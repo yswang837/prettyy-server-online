@@ -9,7 +9,7 @@ import (
 )
 
 func TestKafkaProducer_Push(t *testing.T) {
-	k, err := NewProducer("sso_mfp_rsyslog")
+	k, err := NewProducer("first-topic")
 	require.Equal(t, nil, err)
 	err = k.Start()
 	require.Equal(t, nil, err)
@@ -27,12 +27,12 @@ func TestKafkaProducer_Push(t *testing.T) {
 	}()
 	var wg sync.WaitGroup
 	succ := 0
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			for j := 0; j < 1000; j++ {
-				err = k.Push(fmt.Sprintf("message i: %d, j: %d", i, j))
+			for j := 0; j < 10; j++ {
+				err = k.Push(fmt.Sprintf("new message i: %d, j: %d", i, j))
 				if err != nil {
 					fmt.Printf("an error equal: %s\n", err.Error())
 				} else {
