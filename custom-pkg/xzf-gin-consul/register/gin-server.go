@@ -13,18 +13,18 @@ import (
 
 //gin的路由及参数获取等+go自带的http.server
 
-// GinServer 实现了ManagerServer接口，ManagerServer接口的变量可直接调用绑定在GinServer上面的方法
+type HttpServer interface {
+	Init() error            // 资源初始化
+	SetRoute(r *gin.Engine) // 绑定路由和具体的函数执行逻辑
+}
+
+// GinServer 它实现了ManagerServer接口，ManagerServer接口的变量可直接调用绑定在GinServer上面的方法
 type GinServer struct {
 	name     string
 	address  string
 	r        *gin.Engine
 	server   *http.Server
-	services []HttpServer
-}
-
-type HttpServer interface {
-	Init() error
-	SetRoute(r *gin.Engine) //绑定路由和具体的函数执行逻辑
+	services []HttpServer // 服务列表，HttpServer是一个接口，可调用Init()和SetRoute()方法
 }
 
 func NewGinServer(name string) *GinServer {
@@ -32,12 +32,6 @@ func NewGinServer(name string) *GinServer {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	return &GinServer{r: r, name: name}
-}
-
-func (g *GinServer) SetGroup(groupName string) *GinServer {
-	g2 := g
-	g2.r.Group(groupName)
-	return g2
 }
 
 func setGinMode() {
@@ -59,9 +53,7 @@ func (g *GinServer) Name() string {
 }
 
 func (g *GinServer) Init() error {
-	server := &http.Server{Handler: g.r.Handler(), IdleTimeout: 10 * time.Second}
-	g.server = server
-
+	g.server = &http.Server{Handler: g.r.Handler(), IdleTimeout: 10 * time.Second}
 	for _, service := range g.services {
 		service.SetRoute(g.r)
 		if err := service.Init(); err != nil {
@@ -71,6 +63,7 @@ func (g *GinServer) Init() error {
 	return nil
 }
 
+// AddService 将实现了HttpServer接口的服务添加到g.services中，以便可调用Init()和SetRoute()方法初始化服务
 func (g *GinServer) AddService(services ...HttpServer) {
 	for _, service := range services {
 		g.services = append(g.services, service)
