@@ -16,13 +16,12 @@ type producer interface {
 }
 
 type Producer struct {
-	producer
-	conf *xzfKafka.Config
-	wg   *sync.WaitGroup
-	wg2  *sync.WaitGroup
-
-	successHandler func(*sarama.ProducerMessage)
-	errorHandler   func(error)
+	producer       // 将接口嵌入到结构体中，从而直接拥有了接口的方法，init,send等
+	conf           *xzfKafka.Config
+	wg             *sync.WaitGroup
+	wg2            *sync.WaitGroup
+	successHandler func(*sarama.ProducerMessage) // 函数类型
+	errorHandler   func(error)                   // 函数类型
 }
 
 func NewProducer(conf *xzfKafka.Config) *Producer {
