@@ -12,19 +12,20 @@ import (
 
 var (
 	partitioner = map[string]func(string) sarama.Partitioner{
-		"HashPartitioner":       sarama.NewHashPartitioner,
-		"RoundRobinPartitioner": sarama.NewRoundRobinPartitioner,
-		"RandomPartitioner":     sarama.NewRandomPartitioner,
-		"ManualPartitioner":     sarama.NewManualPartitioner,
+		"HashPartitioner":       sarama.NewHashPartitioner,       // 哈希
+		"RoundRobinPartitioner": sarama.NewRoundRobinPartitioner, // 轮询
+		"RandomPartitioner":     sarama.NewRandomPartitioner,     // 随机
+		"ManualPartitioner":     sarama.NewManualPartitioner,     // 手动指定固定的分区
 	}
 	offsetInitial = map[string]int64{
 		"newest": sarama.OffsetNewest,
 		"oldest": sarama.OffsetOldest,
 	}
 
+	// 将分区分配给消费者的策略
 	balanceStrategy = map[string]sarama.BalanceStrategy{
-		"range":      sarama.BalanceStrategyRange,
-		"roundrobin": sarama.BalanceStrategyRoundRobin,
+		"range":      sarama.BalanceStrategyRange,      // 按照范围平均分配，如1~3分区分给消费者A，4~6分区分给消费者B
+		"roundrobin": sarama.BalanceStrategyRoundRobin, // 按轮询交替方式分配，如1，3，5分配给消费者A，2，4，6分配给消费者B
 	}
 	rootDir = os.Getenv("SERVICE_ROOT") + "/conf/kafka"
 )
