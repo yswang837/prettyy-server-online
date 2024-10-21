@@ -31,10 +31,10 @@ func NewMetrics(prefix string) func(ctx *gin.Context) {
 				url = "unknown"
 			}
 			myCtx := ginConsulRegister.NewContext(ctx)
+			code := myCtx.GetCode()
 			message := myCtx.GetMessage()
 			caller := myCtx.GetCaller()
-
-			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("IDC"), caller, url, strconv.Itoa(status), message).Observe(float64(time.Since(start) / time.Millisecond))
+			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("IDC"), caller, url, strconv.Itoa(status), code, message).Observe(float64(time.Since(start) / time.Millisecond))
 		}()
 		ctx.Next()
 	}

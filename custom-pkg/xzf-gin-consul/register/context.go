@@ -62,6 +62,11 @@ func (ctx *Context) GetMessage() string {
 	return message
 }
 
+func (ctx *Context) GetCode() string {
+	code, _ := ctx.getMeta("code").(string)
+	return code
+}
+
 func (ctx *Context) JSON(code int, obj interface{}) {
 	if o, ok := obj.(Code); ok {
 		ctx.setCode(strconv.Itoa(o.GetCode())) // auto set code into meta
