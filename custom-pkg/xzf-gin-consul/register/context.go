@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// Meta 元数据维护，用于在gin之间传递数据，如caller,code,message等
+
 var metaKey = "__meta__"
 
 type Code interface {
@@ -19,7 +21,7 @@ func NewContext(ctx *gin.Context) *Context {
 	return &Context{ctx}
 }
 
-func (ctx *Context) SetMeta(key string, value interface{}) {
+func (ctx *Context) setMeta(key string, value interface{}) {
 	if ctx == nil {
 		return
 	}
@@ -31,7 +33,7 @@ func (ctx *Context) SetMeta(key string, value interface{}) {
 	meta[key] = value
 }
 
-func (ctx *Context) GetMeta(key string) interface{} {
+func (ctx *Context) getMeta(key string) interface{} {
 	if ctx == nil {
 		return nil
 	}
@@ -43,26 +45,26 @@ func (ctx *Context) GetMeta(key string) interface{} {
 }
 
 func (ctx *Context) SetCaller(caller string) {
-	ctx.SetMeta("caller", caller)
+	ctx.setMeta("caller", caller)
 }
 
 func (ctx *Context) GetCaller() string {
-	caller, _ := ctx.GetMeta("caller").(string)
+	caller, _ := ctx.getMeta("caller").(string)
 	return caller
 }
 
-func (ctx *Context) SetCode(code string) {
-	ctx.SetMeta("code", code)
+func (ctx *Context) setCode(code string) {
+	ctx.setMeta("code", code)
 }
 
 func (ctx *Context) GetMessage() string {
-	message, _ := ctx.GetMeta("message").(string)
+	message, _ := ctx.getMeta("message").(string)
 	return message
 }
 
 func (ctx *Context) JSON(code int, obj interface{}) {
 	if o, ok := obj.(Code); ok {
-		ctx.SetCode(strconv.Itoa(o.GetCode())) // auto set code into meta
+		ctx.setCode(strconv.Itoa(o.GetCode())) // auto set code into meta
 	}
 	ctx.Context.JSON(code, obj)
 }

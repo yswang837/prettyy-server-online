@@ -72,7 +72,7 @@ func (c *Container) Start() error {
 	}
 	// 服务start成功，将所有服务注册给consul，由consul统一接管
 
-	// 对于每一个实现了ManagerServer接口的服务，调用方指定的功能是:输出每个服务监听的端口
+	// 对于每一个实现了ManagerServer接口的服务，获取它的ip和端口绑定到server上，供后续使用
 	err = c.ergodicService(func(server ManagerServer) error {
 		address := server.Address()
 		port := server.Port()
@@ -87,7 +87,7 @@ func (c *Container) Start() error {
 
 	// 对于每一个实现了ManagerServer接口的服务，将其注册到consul
 	err = c.ergodicService(func(server ManagerServer) error {
-		if err := c.registry.Register(server.Name(), server.Port()); err != nil {
+		if err = c.registry.Register(server.Name(), server.Port()); err != nil {
 			return fmt.Errorf("register %s %s fail: %s", server.Name(), server.Address(), err.Error())
 		}
 		log.Printf("success register %s on %s", server.Name(), server.Address())
@@ -97,7 +97,7 @@ func (c *Container) Start() error {
 	return err
 }
 
-// Shutdown 撤销Container中实现了ManagerServer接口的所有服务，从consul上抹掉
+// Shutdown 注销Container中实现了ManagerServer接口的所有服务，从consul上抹掉，并且Shutdown所有服务
 func (c *Container) shutdown(context context.Context) error {
 	_ = c.ergodicService(func(server ManagerServer) error {
 		if err := c.registry.DeRegister(server.Name(), server.Port()); err != nil {
@@ -111,7 +111,6 @@ func (c *Container) shutdown(context context.Context) error {
 		log.Printf("shutdown %s ...", server.Name())
 		return server.Shutdown(context)
 	})
-
 	signal.Stop(c.stopCh)
 	close(c.stopCh)
 	return nil
@@ -132,6 +131,7 @@ func (c *Container) SetRegistry(registry *RegisterConsul) {
 	c.registry = registry
 }
 
+// Wait 等待退出信号，并且退出
 func (c *Container) Wait() error {
 	var err error
 
@@ -139,6 +139,7 @@ func (c *Container) Wait() error {
 	sig := <-c.stopCh
 	log.Println("stop by ", sig)
 	chWait := make(chan error)
+	// 异步shutdown
 	go func() {
 		chWait <- c.shutdown(context.Background())
 	}()
