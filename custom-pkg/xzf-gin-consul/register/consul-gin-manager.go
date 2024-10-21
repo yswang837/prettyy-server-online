@@ -18,6 +18,7 @@ type Container struct {
 	stopCh   chan os.Signal
 }
 
+// ManagerServer 定义了一个服务的接口，包括服务的启动、关闭、注册、服务地址、服务端口等，GinServer实现了该接口
 type ManagerServer interface {
 	Name() string
 	Init() error
@@ -27,13 +28,9 @@ type ManagerServer interface {
 	Shutdown(ctx context.Context) error
 }
 
+// NewContainer 创建一个Container
 func NewContainer() *Container {
 	return &Container{servers: map[string]ManagerServer{}, stopCh: make(chan os.Signal)}
-}
-
-// SetRegistry 需要时单独初始化(未放在NewContainer的参数里面) consul注册，Container只启动gin-server也行
-func (c *Container) SetRegistry(registry *RegisterConsul) {
-	c.registry = registry
 }
 
 // AddServer 向Container中添加实现了ManagerServer接口的所有服务
@@ -64,7 +61,7 @@ func (c *Container) Start() error {
 			}
 		}(server)
 	}
-	// 阻塞等待2秒start所有服务，2秒后没有出错则认为所有服务都start成功
+	// select多路复用，阻塞等待2秒start所有服务，2秒后没有出错则认为所有服务都start成功
 	var err error
 	select {
 	case <-time.After(2 * time.Second):
@@ -73,7 +70,7 @@ func (c *Container) Start() error {
 	if err != nil {
 		return err
 	}
-	// 服务start成功，将所有服务注册给consul，由consul统一管理
+	// 服务start成功，将所有服务注册给consul，由consul统一接管
 
 	// 对于每一个实现了ManagerServer接口的服务，调用方指定的功能是:输出每个服务监听的端口
 	err = c.ergodicService(func(server ManagerServer) error {
@@ -128,6 +125,11 @@ func (c *Container) ergodicService(f func(server ManagerServer) error) (err erro
 		}
 	}
 	return err
+}
+
+// SetRegistry 需要时单独初始化(未放在NewContainer的参数里面) consul注册，Container只启动gin-server也行
+func (c *Container) SetRegistry(registry *RegisterConsul) {
+	c.registry = registry
 }
 
 func (c *Container) Wait() error {
