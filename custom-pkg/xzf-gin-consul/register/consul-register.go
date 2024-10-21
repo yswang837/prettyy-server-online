@@ -20,20 +20,19 @@ type RegisterConsul struct {
 
 // ConsulConfig 定义配置信息
 type ConsulConfig struct {
-	Address string
-
+	Address                 string
 	CheckInterval           string
 	CheckDeregisterInterval string
 }
 
 // NewRegisterConsul 创建一个consul的注册实例
 func NewRegisterConsul() *RegisterConsul {
-	r := &RegisterConsul{}
-	r.config = ConsulConfig{
-		CheckInterval:           "10s",
-		CheckDeregisterInterval: "30s",
+	return &RegisterConsul{
+		config: ConsulConfig{
+			CheckInterval:           "10s",
+			CheckDeregisterInterval: "30s",
+		},
 	}
-	return r
 }
 
 // Init 初始化consul的client信息及资源
@@ -45,11 +44,6 @@ func (r *RegisterConsul) Init() (err error) {
 	}
 	r.client, err = api.NewClient(conf)
 	return
-}
-
-// SetAddress 支持设置地址
-func (r *RegisterConsul) SetAddress(address string) {
-	r.config.Address = address
 }
 
 // Register 真正的注册 consul 服务实例
@@ -69,6 +63,12 @@ func (r *RegisterConsul) Register(serverName string, port int) error {
 	return r.client.Agent().ServiceRegister(registerOption)
 }
 
+// DeRegister 注销 consul 服务实例
+func (r *RegisterConsul) DeRegister(serverName string, port int) error {
+	return r.client.Agent().ServiceDeregister(r.buildConsulServerID(serverName, port))
+}
+
+// getConsulServerIP 获取 consul 服务器IP
 func (r *RegisterConsul) getConsulServerIP() string {
 	ip := os.Getenv("CONSUL_SERVER_IP")
 	if ip != "" {
@@ -77,10 +77,12 @@ func (r *RegisterConsul) getConsulServerIP() string {
 	return "localhost"
 }
 
+// buildConsulServerID 构建 consul 服务实例ID
 func (r *RegisterConsul) buildConsulServerID(serverName string, port int) string {
 	return serverName + "_" + r.getConsulServerIP() + ":" + strconv.Itoa(port)
 }
 
-func (r *RegisterConsul) DeRegister(serverName string, port int) error {
-	return r.client.Agent().ServiceDeregister(r.buildConsulServerID(serverName, port))
+// SetAddress 支持设置地址
+func (r *RegisterConsul) SetAddress(address string) {
+	r.config.Address = address
 }
