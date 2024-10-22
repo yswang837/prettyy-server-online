@@ -21,12 +21,12 @@ func (s *Server) Init() (err error) {
 
 func (s *Server) SetRoute(r *gin.Engine) {
 	r.POST(conf.URLRegisterLogin, func(context *gin.Context) {
-		s.LoginRegister(context)
+		s.LoginRegister(register.NewContext(context))
 	})
 	// 通过邮件发送验证码，账密登录获取验证码，都需要走频次限制的中间件
 	groupHandler := r.Group("").Use(middleWare.Restrict())
 	groupHandler.GET(conf.URLIdentifyCodeByEmail, func(context *gin.Context) {
-		s.GetIdentifyCodeByEmail(context)
+		s.GetIdentifyCodeByEmail(register.NewContext(context))
 	})
 	groupHandler.GET(conf.URLIdentifyCode, func(context *gin.Context) {
 		s.GetIdentifyCode(register.NewContext(context))
