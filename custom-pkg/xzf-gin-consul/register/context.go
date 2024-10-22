@@ -63,6 +63,33 @@ func (ctx *Context) GetError() string {
 	return err
 }
 
+func (ctx *Context) SetEmail(email string) *Context {
+	ctx.setMeta("email", email)
+	return ctx
+}
+func (ctx *Context) GetEmail() string {
+	email, _ := ctx.getMeta("email").(string)
+	return email
+}
+
+func (ctx *Context) SetMethod(method string) *Context {
+	ctx.setMeta("method", method)
+	return ctx
+}
+func (ctx *Context) GetMethod() string {
+	method, _ := ctx.getMeta("method").(string)
+	return method
+}
+
+func (ctx *Context) SetPassword(password string) *Context {
+	ctx.setMeta("password", password)
+	return ctx
+}
+func (ctx *Context) GetPassword() string {
+	password, _ := ctx.getMeta("password").(string)
+	return password
+}
+
 func (ctx *Context) SetAid(aid string) *Context {
 	ctx.setMeta("aid", aid)
 	return ctx

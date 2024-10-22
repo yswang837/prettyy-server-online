@@ -20,6 +20,7 @@ func (s *Server) GetIdentifyCodeByEmail(ctx *ginConsulRegister.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000040, Message: "参数错误"})
 		return
 	}
+	ctx.SetEmail(email)
 	//测试阶段不真正发邮件，该包已测试可用，可通过redis直接查看验证码
 	//iCode := "667788"
 	iCode, err := xzfEmail.SendEmail(email)

@@ -34,6 +34,7 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000001, Message: "参数错误"})
 		return
 	}
+	ctx.SetEmail(p.Email).SetMethod(p.Method).SetPassword(tool.ToMd5(p.Password))
 	switch p.Method {
 	case "1":
 		metrics.CommonCounter.Inc("login-register", "captcha-1")
