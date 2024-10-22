@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"strconv"
@@ -41,29 +42,47 @@ func NewZapLogger() func(ctx *gin.Context) {
 		}
 		if len(ctx.Errors) > 0 {
 			logFields = append(logFields, zap.String("req_error", ctx.Errors.String()))
-			logger.Error("request error", logFields...)
 		} else {
 			myCtxErr := myCtx.GetError()
 			if myCtxErr != "" {
 				logFields = append(logFields, zap.String("sys_error", myCtxErr))
-				logger.Error("system error", logFields...)
-			} else {
-				logger.Info("request completed", logFields...)
 			}
 		}
+		logger.Info("request completed", logFields...)
 	}
 }
 
 func buildLogger() *zap.Logger {
-	// 获取生产环境的配置
-	config := zap.NewProductionConfig()
-	config.EncoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-		// 使用自定义的时间格式
-		encoder.AppendString(t.Format("2006-01-02 15:04:05"))
+	logMode := zapcore.DebugLevel
+	if gin.Mode() == gin.ReleaseMode {
+		logMode = zapcore.InfoLevel
 	}
-	config.EncoderConfig.CallerKey = ""     // 不记录调用者信息，删除则可自动记录行号及调用信息
-	config.EncoderConfig.StacktraceKey = "" // 不记录堆栈信息，删除则可自动记录堆栈信息
-	// 创建 logger
-	log, _ := config.Build()
-	return log
+	core := zapcore.NewCore(getEncoder(), zapcore.NewMultiWriteSyncer(getWriteSyncer(), zapcore.AddSync(os.Stdout)), logMode)
+	return zap.New(core)
+}
+
+func getWriteSyncer() zapcore.WriteSyncer {
+	stSeparator := string(os.PathSeparator)
+	stRootDir, _ := os.Getwd()
+	stLogFilePath := stRootDir + stSeparator + "log" + stSeparator + time.Now().Format(time.DateOnly) + ".log"
+	lumberjackSyncer := &lumberjack.Logger{
+		Filename:   stLogFilePath,
+		MaxSize:    1,     // 单位MB
+		MaxBackups: 3,     // 旧文件的最大个数
+		MaxAge:     30,    // 最大保存天数
+		Compress:   false, // 是否压缩，disabled by default
+	}
+	return zapcore.AddSync(lumberjackSyncer)
+}
+
+func getEncoder() zapcore.Encoder {
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.TimeKey = "time"
+	encoderConfig.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+		// 使用自定义的时间格式
+		encoder.AppendString(t.Format(time.DateTime))
+	}
+	encoderConfig.CallerKey = ""     // 不记录调用者信息，删除则可自动记录行号及调用信息
+	encoderConfig.StacktraceKey = "" // 不记录堆栈信息，删除则可自动记录堆栈信息
+	return zapcore.NewJSONEncoder(encoderConfig)
 }
