@@ -90,6 +90,51 @@ func (ctx *Context) GetPassword() string {
 	return password
 }
 
+func (ctx *Context) SetUid(uid string) *Context {
+	ctx.setMeta("uid", uid)
+	return ctx
+}
+func (ctx *Context) GetUid() string {
+	uid, _ := ctx.getMeta("uid").(string)
+	return uid
+}
+
+func (ctx *Context) SetPage(page string) *Context {
+	ctx.setMeta("page", page)
+	return ctx
+}
+func (ctx *Context) GetPage() string {
+	page, _ := ctx.getMeta("page").(string)
+	return page
+}
+
+func (ctx *Context) SetPageSize(pageSize string) *Context {
+	ctx.setMeta("pageSize", pageSize)
+	return ctx
+}
+func (ctx *Context) GetPageSize() string {
+	pageSize, _ := ctx.getMeta("pageSize").(string)
+	return pageSize
+}
+
+func (ctx *Context) SetVisibility(visibility string) *Context {
+	ctx.setMeta("visibility", visibility)
+	return ctx
+}
+func (ctx *Context) GetVisibility() string {
+	visibility, _ := ctx.getMeta("visibility").(string)
+	return visibility
+}
+
+func (ctx *Context) SetTyp(typ string) *Context {
+	ctx.setMeta("typ", typ)
+	return ctx
+}
+func (ctx *Context) GetTyp() string {
+	typ, _ := ctx.getMeta("typ").(string)
+	return typ
+}
+
 func (ctx *Context) SetAid(aid string) *Context {
 	ctx.setMeta("aid", aid)
 	return ctx

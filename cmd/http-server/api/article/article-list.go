@@ -5,6 +5,8 @@ import (
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	article2 "prettyy-server-online/data/article"
 	"prettyy-server-online/services/article"
+	"prettyy-server-online/utils/metrics"
+	"strconv"
 	"strings"
 )
 
@@ -21,20 +23,28 @@ type articleListParams struct {
 }
 
 func (s *Server) ArticleList(ctx *ginConsulRegister.Context) {
+	metrics.CommonCounter.Inc("article-list", "total")
 	params := &articleListParams{}
 	if err := ctx.Bind(params); err != nil {
+		metrics.CommonCounter.Inc("article-detail", "params-error")
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})
 		return
 	}
+	ctx.SetUid(strconv.FormatInt(params.Uid, 10)).SetPage(strconv.Itoa(params.Page)).SetPageSize(strconv.Itoa(params.PageSize)).SetVisibility(params.Visibility).SetTyp(params.Typ)
 	a, count, err := article.GetArticleList(params.Uid, params.Page, params.PageSize, params.Visibility, params.Typ)
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
+			metrics.CommonCounter.Inc("article-list", "record-not-found")
+			ctx.SetError(err.Error())
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000181, Message: "没有更多数据", Result: []article2.Article{}})
 			return
 		}
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000182, Message: "获取文章列表失败"})
 		return
 	}
+	metrics.CommonCounter.Inc("article-list", "succ")
 	result := map[string]interface{}{"article_list": a, "count": count}
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000180, Message: "获取文章列表成功", Result: result})
 	return
