@@ -1,7 +1,6 @@
 package base
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
@@ -18,12 +17,13 @@ var store = base64Captcha.DefaultMemStore
 // GetIdentifyCode 账密登录时，获取验证码
 // 4000100
 // 2000100
-func (s *Server) GetIdentifyCode(ctx *gin.Context) {
+func (s *Server) GetIdentifyCode(ctx *ginConsulRegister.Context) {
 	driver := base64Captcha.NewDriverDigit(80, 240, 6, 0.7, 80)
 	cp := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败"})
+		ctx.SetError("生成验证码失败")
 		return
 	}
 	resp := &captchaResponse{

@@ -23,7 +23,11 @@ func main() {
 	// 业务用一个端口，监控用另一个端口
 	httpServer := ginConsulRegister.NewGinServer("blog-service")
 	httpServer.SetAddress(os.Getenv("HTTP_SERVER_LISTEN_ADDR")) // 可支持通过环境变量来设置端口，如果不指定就是随机可用的端口号
-	httpServer.Use(middleWare.Cors(), middleWare.NewZapLogger(), auth.Auth, middleWare.NewMetrics("blog_service_"))
+	httpServer.Use(
+		middleWare.Cors(),
+		auth.Auth,
+		middleWare.NewZapLogger(),
+		middleWare.NewMetrics("blog_service_"))
 	httpServer.AddService(
 		base.NewServer(),
 		user.NewServer(),

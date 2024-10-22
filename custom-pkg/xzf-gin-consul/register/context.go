@@ -48,6 +48,14 @@ func (ctx *Context) SetCaller(caller string) {
 	ctx.setMeta("caller", caller)
 }
 
+func (ctx *Context) SetError(error string) {
+	ctx.setMeta("error", error)
+}
+func (ctx *Context) GetError() string {
+	err, _ := ctx.getMeta("error").(string)
+	return err
+}
+
 func (ctx *Context) GetCaller() string {
 	caller, _ := ctx.getMeta("caller").(string)
 	return caller

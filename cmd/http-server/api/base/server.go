@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"prettyy-server-online/cmd/http-server/conf"
 	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
+	"prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 )
 
 // Server 绑定所有用户相关的服务
@@ -28,6 +29,6 @@ func (s *Server) SetRoute(r *gin.Engine) {
 		s.GetIdentifyCodeByEmail(context)
 	})
 	groupHandler.GET(conf.URLIdentifyCode, func(context *gin.Context) {
-		s.GetIdentifyCode(context)
+		s.GetIdentifyCode(register.NewContext(context))
 	})
 }

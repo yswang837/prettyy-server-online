@@ -11,7 +11,7 @@ import (
 )
 
 func NewMetrics(prefix string) func(ctx *gin.Context) {
-	tags := []string{"service_name", "domain", "idc", "caller", "url", "http_status", "message"}
+	tags := []string{"service_name", "domain", "idc", "caller", "url", "http_status", "code", "message"}
 	buckets := []float64{2, 5, 10, 25, 50, 100}
 	vec := prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
