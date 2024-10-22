@@ -44,16 +44,9 @@ func (ctx *Context) getMeta(key string) interface{} {
 	return meta[key]
 }
 
-func (ctx *Context) SetCaller(caller string) {
+func (ctx *Context) SetCaller(caller string) *Context {
 	ctx.setMeta("caller", caller)
-}
-
-func (ctx *Context) SetError(error string) {
-	ctx.setMeta("error", error)
-}
-func (ctx *Context) GetError() string {
-	err, _ := ctx.getMeta("error").(string)
-	return err
+	return ctx
 }
 
 func (ctx *Context) GetCaller() string {
@@ -61,13 +54,27 @@ func (ctx *Context) GetCaller() string {
 	return caller
 }
 
-func (ctx *Context) setCode(code string) {
-	ctx.setMeta("code", code)
+func (ctx *Context) SetError(error string) *Context {
+	ctx.setMeta("error", error)
+	return ctx
+}
+func (ctx *Context) GetError() string {
+	err, _ := ctx.getMeta("error").(string)
+	return err
 }
 
-func (ctx *Context) GetMessage() string {
-	message, _ := ctx.getMeta("message").(string)
-	return message
+func (ctx *Context) SetAid(aid string) *Context {
+	ctx.setMeta("aid", aid)
+	return ctx
+}
+func (ctx *Context) GetAid() string {
+	aid, _ := ctx.getMeta("aid").(string)
+	return aid
+}
+
+// auto set code into meta
+func (ctx *Context) setCode(code string) {
+	ctx.setMeta("code", code)
 }
 
 func (ctx *Context) GetCode() string {

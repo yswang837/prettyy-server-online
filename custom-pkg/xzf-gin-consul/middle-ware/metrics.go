@@ -11,7 +11,7 @@ import (
 )
 
 func NewMetrics(prefix string) func(ctx *gin.Context) {
-	tags := []string{"service_name", "domain", "idc", "caller", "url", "http_status", "code", "message"}
+	tags := []string{"service_name", "domain", "idc", "caller", "url", "http_status", "code"}
 	buckets := []float64{2, 5, 10, 25, 50, 100}
 	vec := prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
@@ -32,9 +32,8 @@ func NewMetrics(prefix string) func(ctx *gin.Context) {
 			}
 			myCtx := ginConsulRegister.NewContext(ctx)
 			code := myCtx.GetCode()
-			message := myCtx.GetMessage()
 			caller := myCtx.GetCaller()
-			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("IDC"), caller, url, strconv.Itoa(status), code, message).Observe(float64(time.Since(start) / time.Millisecond))
+			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("IDC"), caller, url, strconv.Itoa(status), code).Observe(float64(time.Since(start) / time.Millisecond))
 		}()
 		ctx.Next()
 	}

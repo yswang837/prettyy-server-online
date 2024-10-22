@@ -40,16 +40,20 @@ func NewZapLogger() func(ctx *gin.Context) {
 			zap.String("hostname", hostName),
 			zap.String("caller", myCtx.GetCaller()),
 		}
+		logFields = appendLogFields("error", myCtx.GetError(), logFields)
+		logFields = appendLogFields("aid", myCtx.GetAid(), logFields)
 		if len(ctx.Errors) > 0 {
 			logFields = append(logFields, zap.String("req_error", ctx.Errors.String()))
-		} else {
-			myCtxErr := myCtx.GetError()
-			if myCtxErr != "" {
-				logFields = append(logFields, zap.String("sys_error", myCtxErr))
-			}
 		}
 		logger.Info("completed", logFields...)
 	}
+}
+
+func appendLogFields(fieldName, fieldValue string, logFields []zap.Field) []zap.Field {
+	if fieldValue == "" {
+		return logFields
+	}
+	return append(logFields, zap.String(fieldName, fieldValue))
 }
 
 // buildLogger 构建日志，
