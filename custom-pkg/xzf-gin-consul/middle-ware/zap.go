@@ -48,16 +48,21 @@ func NewZapLogger() func(ctx *gin.Context) {
 				logFields = append(logFields, zap.String("sys_error", myCtxErr))
 			}
 		}
-		logger.Info("request completed", logFields...)
+		logger.Info("completed", logFields...)
 	}
 }
 
+// buildLogger 构建日志，
+// 开发环境同时向日志文件和屏幕均输出日志，输出所有日志级别
+// 生成环境只输出到日志文件，输出Info、Warn、Error 和 DPanic、Panic、Fatal日志级别
 func buildLogger() *zap.Logger {
-	logMode := zapcore.DebugLevel
-	if gin.Mode() == gin.ReleaseMode {
-		logMode = zapcore.InfoLevel
+	logMode := zapcore.InfoLevel
+	if os.Getenv("idc") == "dev" {
+		logMode = zapcore.DebugLevel
+		core := zapcore.NewCore(getEncoder(), zapcore.NewMultiWriteSyncer(getWriteSyncer(), zapcore.AddSync(os.Stdout)), logMode)
+		return zap.New(core)
 	}
-	core := zapcore.NewCore(getEncoder(), zapcore.NewMultiWriteSyncer(getWriteSyncer(), zapcore.AddSync(os.Stdout)), logMode)
+	core := zapcore.NewCore(getEncoder(), getWriteSyncer(), logMode)
 	return zap.New(core)
 }
 
