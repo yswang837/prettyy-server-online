@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -16,7 +15,7 @@ type updateSummaryParams struct {
 // UpdateSummary 更新用户的个人介绍
 // 4000240
 // 2000240
-func (s *Server) UpdateSummary(ctx *gin.Context) {
+func (s *Server) UpdateSummary(ctx *ginConsulRegister.Context) {
 	p := &updateSummaryParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000240, Message: "参数错误"})

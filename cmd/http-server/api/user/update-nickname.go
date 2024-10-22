@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -16,7 +15,7 @@ type updateNickNameParams struct {
 // UpdateNickName 更新用户名，默认用户名为邮箱前缀
 // 4000200
 // 2000200
-func (s *Server) UpdateNickName(ctx *gin.Context) {
+func (s *Server) UpdateNickName(ctx *ginConsulRegister.Context) {
 	p := &updateNickNameParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000200, Message: "参数错误"})

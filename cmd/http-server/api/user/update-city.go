@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -17,7 +16,7 @@ type updateProvinceCityParams struct {
 // UpdateProvinceCity 更新用户的户籍省市
 // 4000260
 // 2000260
-func (s *Server) UpdateProvinceCity(ctx *gin.Context) {
+func (s *Server) UpdateProvinceCity(ctx *ginConsulRegister.Context) {
 	p := &updateProvinceCityParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000260, Message: "参数错误"})

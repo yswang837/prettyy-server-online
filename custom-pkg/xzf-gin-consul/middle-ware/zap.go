@@ -30,7 +30,7 @@ func NewZapLogger() func(ctx *gin.Context) {
 			hostName = "unknown"
 		}
 		logFields := []zap.Field{
-			zap.Int("status", status),
+			zap.String("status", strconv.Itoa(status)),
 			zap.String("method", method),
 			zap.String("url", url),
 			zap.String("client_ip", clientIP),

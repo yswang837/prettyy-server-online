@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
@@ -15,7 +14,7 @@ import (
 // 4000140
 // 2000140
 
-func (s *Server) FileUpload(ctx *gin.Context) {
+func (s *Server) FileUpload(ctx *ginConsulRegister.Context) {
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000140, Message: "参数错误"})

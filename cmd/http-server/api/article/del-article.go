@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/article"
@@ -16,7 +15,7 @@ type delArticleParams struct {
 	Uid int64  `json:"uid" form:"uid" binding:"required"` // 用户ID
 }
 
-func (s *Server) DelArticle(ctx *gin.Context) {
+func (s *Server) DelArticle(ctx *ginConsulRegister.Context) {
 	params := &delArticleParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000320, Message: "参数错误"})

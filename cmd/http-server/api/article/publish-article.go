@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
@@ -36,7 +35,7 @@ type articleParams struct {
 	Uid        int64  `json:"uid" form:"uid" binding:"required"`             // 用户id
 }
 
-func (s *Server) PublishArticle(ctx *gin.Context) {
+func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 	params := &articleParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})

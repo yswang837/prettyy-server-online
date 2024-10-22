@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 )
@@ -33,7 +32,7 @@ type extractSummaryResp struct {
 	EvalDuration       int64   `json:"eval_duration,omitempty"`
 }
 
-func (s *Server) ExtractSummary(ctx *gin.Context) {
+func (s *Server) ExtractSummary(ctx *ginConsulRegister.Context) {
 	params := &extractSummaryParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000380, Message: "参数错误"})

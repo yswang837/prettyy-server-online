@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -16,7 +15,7 @@ type updatePasswordParams struct {
 // UpdatePassword 设置密码，设置后即可账密登录
 // 4000300
 // 2000300
-func (s *Server) UpdatePassword(ctx *gin.Context) {
+func (s *Server) UpdatePassword(ctx *ginConsulRegister.Context) {
 	p := &updatePasswordParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000300, Message: "参数错误"})

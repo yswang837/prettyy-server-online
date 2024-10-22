@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/article"
@@ -17,7 +16,7 @@ type getUserInfoByAidParams struct {
 	Aid string `json:"aid" form:"aid" binding:"required"` // 文章id
 }
 
-func (s *Server) GetUserInfoByAid(ctx *gin.Context) {
+func (s *Server) GetUserInfoByAid(ctx *ginConsulRegister.Context) {
 	params := &getUserInfoByAidParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000340, Message: "参数错误"})

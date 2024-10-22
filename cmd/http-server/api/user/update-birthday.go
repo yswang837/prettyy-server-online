@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -16,7 +15,7 @@ type updateBirthdayParams struct {
 // UpdateBirthday 更新用户的出生日期
 // 4000280
 // 2000280
-func (s *Server) UpdateBirthday(ctx *gin.Context) {
+func (s *Server) UpdateBirthday(ctx *ginConsulRegister.Context) {
 	p := &updateBirthdayParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})

@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	article2 "prettyy-server-online/data/article"
@@ -21,7 +20,7 @@ type articleListParams struct {
 	Typ        string `json:"typ" form:"typ"`                      // 文章类型，1-原创 2-转载 3-翻译
 }
 
-func (s *Server) ArticleList(ctx *gin.Context) {
+func (s *Server) ArticleList(ctx *ginConsulRegister.Context) {
 	params := &articleListParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})

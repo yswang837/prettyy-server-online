@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -16,7 +15,7 @@ type updateGenderParams struct {
 // UpdateGender 更新性别，默认只能更新一次
 // 4000220
 // 2000220
-func (s *Server) UpdateGender(ctx *gin.Context) {
+func (s *Server) UpdateGender(ctx *ginConsulRegister.Context) {
 	p := &updateGenderParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000220, Message: "参数错误"})

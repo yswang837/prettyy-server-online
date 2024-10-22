@@ -1,7 +1,6 @@
 package column
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	invertedIndex "prettyy-server-online/data/inverted-index"
@@ -19,7 +18,7 @@ type columnListParams struct {
 	Uid int64 `json:"uid" form:"uid" binding:"required"`
 }
 
-func (s *Server) ColumnList(ctx *gin.Context) {
+func (s *Server) ColumnList(ctx *ginConsulRegister.Context) {
 	params := &columnListParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000360, Message: "参数错误"})

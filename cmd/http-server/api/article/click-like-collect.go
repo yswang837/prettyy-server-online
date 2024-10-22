@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	invertedIndex "prettyy-server-online/data/inverted-index"
@@ -25,7 +24,7 @@ type clickLikeCollectResp struct {
 	CollectNum int `json:"collect_num"`
 }
 
-func (s *Server) ClickLikeCollect(ctx *gin.Context) {
+func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 	params := &clickLikeCollectParams{}
 	if err := ctx.Bind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000400, Message: "参数错误"})

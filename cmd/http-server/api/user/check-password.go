@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	"prettyy-server-online/services/user"
@@ -15,7 +14,7 @@ type checkPasswordParams struct {
 // CheckPassword 检查密码是否为空，为空则在用户通过验证码登录后提示用户
 // 4000020
 // 2000020
-func (s *Server) CheckPassword(ctx *gin.Context) {
+func (s *Server) CheckPassword(ctx *ginConsulRegister.Context) {
 	p := &checkPasswordParams{}
 	if err := ctx.Bind(p); err != nil {
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})

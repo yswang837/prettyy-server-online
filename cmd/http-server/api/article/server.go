@@ -5,6 +5,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"prettyy-server-online/cmd/http-server/conf"
 	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
+	"prettyy-server-online/custom-pkg/xzf-gin-consul/register"
 	xzfSnowflake "prettyy-server-online/custom-pkg/xzf-snowflake"
 	"prettyy-server-online/utils/http"
 	"time"
@@ -28,26 +29,26 @@ func (s *Server) Init() (err error) {
 func (s *Server) SetRoute(r *gin.Engine) {
 	// 不需要token认证
 	r.GET(conf.URLGetArticleDetail, func(context *gin.Context) {
-		s.ArticleDetail(context)
+		s.ArticleDetail(register.NewContext(context))
 	})
 	r.GET(conf.URLGetArticleList, func(context *gin.Context) {
-		s.ArticleList(context)
+		s.ArticleList(register.NewContext(context))
 	})
 	r.GET(conf.URLGetUserInfoByAid, func(context *gin.Context) {
-		s.GetUserInfoByAid(context)
-	})
-	r.POST(conf.URLExtractSummary, func(context *gin.Context) {
-		s.ExtractSummary(context)
+		s.GetUserInfoByAid(register.NewContext(context))
 	})
 	// 需要token认证的路由组
 	groupHandler := r.Group("").Use(middleWare.JwtAuth())
 	groupHandler.POST(conf.URLPublishArticle, func(context *gin.Context) {
-		s.PublishArticle(context)
+		s.PublishArticle(register.NewContext(context))
 	})
 	groupHandler.POST(conf.URLDelArticle, func(context *gin.Context) {
-		s.DelArticle(context)
+		s.DelArticle(register.NewContext(context))
 	})
 	groupHandler.POST(conf.URLLikeCollectArticle, func(context *gin.Context) {
-		s.ClickLikeCollect(context)
+		s.ClickLikeCollect(register.NewContext(context))
+	})
+	groupHandler.POST(conf.URLExtractSummary, func(context *gin.Context) {
+		s.ExtractSummary(register.NewContext(context))
 	})
 }
