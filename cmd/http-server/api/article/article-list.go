@@ -15,11 +15,11 @@ import (
 // 2000180
 
 type articleListParams struct {
-	Uid        int64  `json:"uid" form:"uid"`                      // uid 如果合法，则返回的是当前用户的文章列表，否则返回的是首页文章的列表
-	Page       int    `json:"page" form:"page" binding:"required"` // 第几页
-	PageSize   int    `json:"page_size" form:"page_size"`          // 每页多少条
-	Visibility string `json:"visibility" form:"visibility"`        // 文章的可见性, 1-全部可见 2-VIP可见 3-粉丝可见 4-仅我可见
-	Typ        string `json:"typ" form:"typ"`                      // 文章类型，1-原创 2-转载 3-翻译
+	Uid        int64  `form:"uid"`                     // uid 如果合法，则返回的是当前用户的文章列表，否则返回的是首页文章的列表
+	Page       int    `form:"page" binding:"required"` // 第几页
+	PageSize   int    `form:"page_size"`               // 每页多少条
+	Visibility string `form:"visibility"`              // 文章的可见性, 1-全部可见 2-VIP可见 3-粉丝可见 4-仅我可见
+	Typ        string `form:"typ"`                     // 文章类型，1-原创 2-转载 3-翻译
 }
 
 func (s *Server) ArticleList(ctx *ginConsulRegister.Context) {

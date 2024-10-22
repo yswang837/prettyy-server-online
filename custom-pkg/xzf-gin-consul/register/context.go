@@ -117,6 +117,24 @@ func (ctx *Context) GetPageSize() string {
 	return pageSize
 }
 
+func (ctx *Context) SetMuid(muid string) *Context {
+	ctx.setMeta("muid", muid)
+	return ctx
+}
+func (ctx *Context) GetMuid() string {
+	muid, _ := ctx.getMeta("muid").(string)
+	return muid
+}
+
+func (ctx *Context) SetSuid(suid string) *Context {
+	ctx.setMeta("suid", suid)
+	return ctx
+}
+func (ctx *Context) GetSuid() string {
+	suid, _ := ctx.getMeta("suid").(string)
+	return suid
+}
+
 func (ctx *Context) SetVisibility(visibility string) *Context {
 	ctx.setMeta("visibility", visibility)
 	return ctx

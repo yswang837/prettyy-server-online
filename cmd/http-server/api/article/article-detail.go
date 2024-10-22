@@ -12,7 +12,7 @@ import (
 // 2000160
 
 type articleDetailParams struct {
-	Aid string `json:"aid" form:"aid" binding:"required"` // 文章id
+	Aid string `form:"aid" binding:"required"` // 文章id
 }
 
 func (s *Server) ArticleDetail(ctx *ginConsulRegister.Context) {
