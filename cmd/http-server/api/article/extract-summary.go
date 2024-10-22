@@ -3,6 +3,7 @@ package article
 import (
 	"net/http"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
+	"prettyy-server-online/utils/metrics"
 )
 
 // 提取文章摘要信息
@@ -14,7 +15,7 @@ const (
 )
 
 type extractSummaryParams struct {
-	Content string `json:"content" form:"content" binding:"required"` // 文章内容，用于提取摘要
+	Content string `form:"content" binding:"required"` // 文章内容，用于提取摘要
 }
 
 type extractSummaryResp struct {
@@ -33,8 +34,11 @@ type extractSummaryResp struct {
 }
 
 func (s *Server) ExtractSummary(ctx *ginConsulRegister.Context) {
+	metrics.CommonCounter.Inc("extract-summary", "total")
 	params := &extractSummaryParams{}
 	if err := ctx.Bind(params); err != nil {
+		metrics.CommonCounter.Inc("extract-summary", "params-error")
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000380, Message: "参数错误"})
 		return
 	}
@@ -46,9 +50,12 @@ func (s *Server) ExtractSummary(ctx *ginConsulRegister.Context) {
 	resp := &extractSummaryResp{}
 	_, err := s.client.R().SetResult(resp).SetBody(query).Post(qwenURL)
 	if err != nil {
+		metrics.CommonCounter.Inc("extract-summary", "query-error")
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000381, Message: "调用通义千问出错"})
 		return
 	}
+	metrics.CommonCounter.Inc("extract-summary", "succ")
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000380, Message: "调用qwen2.5:0.5b成功", Result: resp.Response})
 	return
 }
