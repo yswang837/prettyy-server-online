@@ -144,6 +144,33 @@ func (ctx *Context) GetBirthday() string {
 	return birthday
 }
 
+func (ctx *Context) SetProvinceCity(pc string) *Context {
+	ctx.setMeta("province_city", pc)
+	return ctx
+}
+func (ctx *Context) GetProvinceCity() string {
+	provinceCity, _ := ctx.getMeta("province_city").(string)
+	return provinceCity
+}
+
+func (ctx *Context) SetGender(gender string) *Context {
+	ctx.setMeta("gender", gender)
+	return ctx
+}
+func (ctx *Context) GetGender() string {
+	gender, _ := ctx.getMeta("gender").(string)
+	return gender
+}
+
+func (ctx *Context) SetNickname(nickname string) *Context {
+	ctx.setMeta("nickname", nickname)
+	return ctx
+}
+func (ctx *Context) GetNickname() string {
+	nickname, _ := ctx.getMeta("nickname").(string)
+	return nickname
+}
+
 func (ctx *Context) SetTitle(title string) *Context {
 	ctx.setMeta("title", title)
 	return ctx
