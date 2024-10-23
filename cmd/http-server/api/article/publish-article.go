@@ -42,7 +42,7 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(params); err != nil {
 		metrics.CommonCounter.Inc("publish-article", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
 		return
 	}
 	aid := xzfSnowflake.GenID(articlePrefix)
@@ -61,7 +61,7 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 	if err := article.Add(a); err != nil {
 		metrics.CommonCounter.Inc("publish-article", "add-article-fail")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
 	// 先查反向索引，查不到就添加uid->aid,以便在开启分表后，内容管理页面查询当前用户的文章
@@ -71,7 +71,7 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 		if err := invertedIndex2.Add(i); err != nil {
 			metrics.CommonCounter.Inc("publish-article", "add-inverted-fail")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
 			return
 		}
 	}
@@ -84,7 +84,7 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 		length := len(columns)
 		if length == 0 || length >= 7 || length%2 != 0 {
 			metrics.CommonCounter.Inc("publish-article", "invalid-columns")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
 			return
 		}
 		for i := 0; i < length; i = i + 2 {
@@ -103,7 +103,7 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 		if err := column.Add(needInsertToColumn, params.Uid); err != nil {
 			metrics.CommonCounter.Inc("publish-article", "add-column-fail")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
 			return
 		}
 		// 维护uid->cid的反向索引表
@@ -112,13 +112,13 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 				i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidCid, AttrValue: uid, Idx: cid}
 				if err := invertedIndex2.Add(i); err != nil {
 					metrics.CommonCounter.Inc("publish-article", "add-inverted-column-fail")
-					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
+					ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
 					return
 				}
 			}
 		}
 	}
 	metrics.CommonCounter.Inc("publish-article", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
 	return
 }

@@ -23,17 +23,17 @@ func (s *Server) DelArticle(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(params); err != nil {
 		metrics.CommonCounter.Inc("del-article", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000320, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000320, Message: "参数错误"})
 		return
 	}
 	ctx.SetAid(params.Aid).SetUid(strconv.FormatInt(params.Uid, 10))
 	if err := article.Delete(params.Aid, params.Uid); err != nil {
 		metrics.CommonCounter.Inc("del-article", "del-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000321, Message: "删除文章失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000321, Message: "删除文章失败"})
 		return
 	}
 	metrics.CommonCounter.Inc("del-article", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000320, Message: "删除文章成功"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000320, Message: "删除文章成功"})
 	return
 }

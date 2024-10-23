@@ -61,6 +61,7 @@ func NewZapLogger() func(ctx *gin.Context) {
 		logFields = appendLogFields("province_city", myCtx.GetProvinceCity(), logFields)
 		logFields = appendLogFields("gender", myCtx.GetGender(), logFields)
 		logFields = appendLogFields("nickname", myCtx.GetNickname(), logFields)
+		logFields = appendLogFields("code", myCtx.GetCode(), logFields)
 		if len(ctx.Errors) > 0 {
 			logFields = append(logFields, zap.String("req_error", ctx.Errors.String()))
 		}

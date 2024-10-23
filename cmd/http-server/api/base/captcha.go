@@ -26,11 +26,11 @@ func (s *Server) GetIdentifyCode(ctx *ginConsulRegister.Context) {
 	if err != nil {
 		metrics.CommonCounter.Inc("captcha", "err")
 		ctx.SetError("生成验证码失败")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败，请稍后重试或联系客服"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000100, Message: "生成验证码失败，请稍后重试或联系客服"})
 		return
 	}
 	resp := &captchaResponse{CaptchaId: id, PicPath: b64s, CaptchaLength: 4}
 	metrics.CommonCounter.Inc("captcha", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000100, Message: "生成验证码成功", Result: resp})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000100, Message: "生成验证码成功", Result: resp})
 	return
 }

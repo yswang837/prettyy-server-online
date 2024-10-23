@@ -22,7 +22,7 @@ func (s *Server) UpdateBirthday(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(p); err != nil {
 		metrics.CommonCounter.Inc("update-birthday", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000280, Message: "参数错误"})
 		return
 	}
 	ctx.SetUid(p.Uid).SetBirthday(p.Birthday)
@@ -30,21 +30,21 @@ func (s *Server) UpdateBirthday(ctx *ginConsulRegister.Context) {
 	if err != nil {
 		metrics.CommonCounter.Inc("update-birthday", "get-user-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000281, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000281, Message: "获取用户信息失败"})
 		return
 	}
 	if p.Birthday == u.Birthday {
 		metrics.CommonCounter.Inc("update-birthday", "same-birthday")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000282, Message: "生日未改变"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000282, Message: "生日未改变"})
 		return
 	}
 	if err = user.UpdateBirthdayCity(p.Uid, p.Birthday); err != nil {
 		metrics.CommonCounter.Inc("update-birthday", "update-birthday-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000283, Message: "更新生日失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000283, Message: "更新生日失败"})
 		return
 	}
 	metrics.CommonCounter.Inc("update-birthday", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000280, Message: "更新生日成功"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000280, Message: "更新生日成功"})
 	return
 }

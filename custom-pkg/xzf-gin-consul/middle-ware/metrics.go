@@ -33,7 +33,7 @@ func NewMetrics(prefix string) func(ctx *gin.Context) {
 			myCtx := ginConsulRegister.NewContext(ctx)
 			code := myCtx.GetCode()
 			caller := myCtx.GetCaller()
-			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("IDC"), caller, url, strconv.Itoa(status), code).Observe(float64(time.Since(start) / time.Millisecond))
+			vec.WithLabelValues(os.Getenv("SERVICE_NAME"), domain, os.Getenv("idc"), caller, url, strconv.Itoa(status), code).Observe(float64(time.Since(start) / time.Millisecond))
 		}()
 		ctx.Next()
 	}

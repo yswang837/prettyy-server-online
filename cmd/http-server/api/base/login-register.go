@@ -31,7 +31,7 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(p); err != nil {
 		metrics.CommonCounter.Inc("login-register", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000001, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000001, Message: "参数错误"})
 		return
 	}
 	ctx.SetEmail(p.Email).SetMethod(p.Method).SetPassword(tool.ToMd5(p.Password))
@@ -41,12 +41,12 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 		// 验证码登录/注册
 		if p.IdentifyCode == "" {
 			metrics.CommonCounter.Inc("login-register", "empty-captcha-1")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000002, Message: "验证码为空"}) // 免密方式，验证码为空
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000002, Message: "验证码为空"}) // 免密方式，验证码为空
 			return
 		}
 		if p.IdentifyCode != user3.GetIdentifyCodeFromCache(p.Email) {
 			metrics.CommonCounter.Inc("login-register", "error-captcha-1")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000003, Message: "验证码错误"}) //免密方式，验证码错误
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000003, Message: "验证码错误"}) //免密方式，验证码错误
 			return
 		}
 	case "2":
@@ -54,23 +54,23 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 		// 密码登录/注册
 		if p.Password == "" {
 			metrics.CommonCounter.Inc("login-register", "empty-password-2")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000004, Message: "密码为空"}) //账密方式，密码为空
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000004, Message: "密码为空"}) //账密方式，密码为空
 			return
 		}
 		if p.IdentifyID == "" || p.IdentifyCode == "" {
 			metrics.CommonCounter.Inc("login-register", "empty-captcha-2")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000005, Message: "验证码为空"}) //账密方式，验证码为空
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000005, Message: "验证码为空"}) //账密方式，验证码为空
 			return
 		}
 		if !store.Verify(p.IdentifyID, p.IdentifyCode, true) {
 			// 验证码错误，防爆次数为1，也就是填错了就清空当前的identify_id
 			metrics.CommonCounter.Inc("login-register", "error-captcha-2")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000006, Message: "验证码错误"}) //账密方式，验证码错误
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000006, Message: "验证码错误"}) //账密方式，验证码错误
 			return
 		}
 	default:
 		metrics.CommonCounter.Inc("login-register", "unsupported-method")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
 		return
 	}
 	// 执行到这，两种验证码都通过 或者 账密登录时密码不为空
@@ -88,7 +88,7 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 			if err = invertedIndex2.Add(invertedObj); err != nil {
 				metrics.CommonCounter.Inc("login-register", "register-failed")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 				return
 			}
 			// 生成token，无论注册还是登录均带上token返回
@@ -98,20 +98,20 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 				if err != nil {
 					ctx.SetError(err.Error())
 				}
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
 				return
 			}
 		} else {
 			metrics.CommonCounter.Inc("login-register", "register-failed")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000009, Message: "注册失败"})
 			return
 		}
 		m := user3.UserToMap(userObj)
 		delete(m, "uid")
 		result := map[string]interface{}{"token": token, "user": m}
 		metrics.CommonCounter.Inc("login-register", "register-succ")
-		ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
+		ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000001, Message: "注册成功", Result: result})
 		return
 	} else {
 		metrics.CommonCounter.Inc("login-register", "login")
@@ -120,7 +120,7 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 		if err != nil {
 			metrics.CommonCounter.Inc("login-register", "get-userinfo-failed")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000010, Message: "获取用户信息失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000010, Message: "获取用户信息失败"})
 			return
 		}
 		// 生成token，无论注册还是登录均带上token返回
@@ -130,7 +130,7 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 			if err != nil {
 				ctx.SetError(err.Error())
 			}
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000008, Message: "生成token失败"})
 			return
 		}
 		m := user3.UserToMap(user)
@@ -143,18 +143,18 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 			if err = user3.UpdateLoginTime(strconv.FormatInt(user.Uid, 10)); err != nil {
 				metrics.CommonCounter.Inc("login-register", "update-login-time-failed-1")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000011, Message: "更新登录时间失败"}) //免密方式，更新登录时间失败
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000011, Message: "更新登录时间失败"}) //免密方式，更新登录时间失败
 				return
 			}
 			metrics.CommonCounter.Inc("login-register", "login-succ-1")
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
+			ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000002, Message: "免密方式，登录成功", Result: result})
 			return
 		case "2":
 			metrics.CommonCounter.Inc("login-register", "login-2")
 			if user.Password == "" {
 				metrics.CommonCounter.Inc("login-register", "login-empty-password-2")
 				// 用户通过验证码注册的，从而未设置密码(数据库中密码为空)，而登录的时候走了密码登录
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000012, Message: "您未设置密码，请使用免密登录后设置密码"})
 				return
 			}
 			if user.Password == tool.ToMd5(p.Password) {
@@ -162,21 +162,21 @@ func (s *Server) LoginRegister(ctx *ginConsulRegister.Context) {
 				if err = user3.UpdateLoginTime(strconv.FormatInt(user.Uid, 10)); err != nil {
 					metrics.CommonCounter.Inc("login-register", "update-login-time-failed-2")
 					ctx.SetError(err.Error())
-					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000013, Message: "更新登录时间失败"}) //账密方式，更新登录时间失败
+					ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000013, Message: "更新登录时间失败"}) //账密方式，更新登录时间失败
 					return
 				}
 				metrics.CommonCounter.Inc("login-register", "login-succ-2")
-				ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000003, Message: "账密方式，登录成功", Result: result})
+				ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000003, Message: "账密方式，登录成功", Result: result})
 				return
 			} else {
 				// 用户输入的密码有误
 				metrics.CommonCounter.Inc("login-register", "email-password-error")
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000014, Message: "邮箱或者密码错误"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000014, Message: "邮箱或者密码错误"})
 				return
 			}
 		default:
 			metrics.CommonCounter.Inc("login-register", "unsupported-method")
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000007, Message: "不支持的登录/注册方式"})
 			return
 		}
 	}

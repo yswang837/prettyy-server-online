@@ -23,7 +23,7 @@ func (s *Server) GetUserInfoByAid(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(params); err != nil {
 		metrics.CommonCounter.Inc("get-userinfo-aid", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000340, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000340, Message: "参数错误"})
 		return
 	}
 	ctx.SetAid(params.Aid)
@@ -31,17 +31,17 @@ func (s *Server) GetUserInfoByAid(ctx *ginConsulRegister.Context) {
 	if err != nil {
 		metrics.CommonCounter.Inc("get-userinfo-aid", "get-articleinfo-fail")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000341, Message: "获取文章信息失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000341, Message: "获取文章信息失败"})
 		return
 	}
 	u, err := user3.GetUser(strconv.FormatInt(a.Uid, 10))
 	if err != nil {
 		metrics.CommonCounter.Inc("get-userinfo-aid", "get-userinfo-fail")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000342, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000342, Message: "获取用户信息失败"})
 		return
 	}
 	metrics.CommonCounter.Inc("get-userinfo-aid", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000340, Message: "获取用户信息成功", Result: u})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000340, Message: "获取用户信息成功", Result: u})
 	return
 }

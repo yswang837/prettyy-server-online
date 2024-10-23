@@ -28,7 +28,7 @@ func (s *Server) ArticleList(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(params); err != nil {
 		metrics.CommonCounter.Inc("article-detail", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000180, Message: "参数错误"})
 		return
 	}
 	ctx.SetUid(strconv.FormatInt(params.Uid, 10)).SetPage(strconv.Itoa(params.Page)).SetPageSize(strconv.Itoa(params.PageSize)).SetVisibility(params.Visibility).SetTyp(params.Typ)
@@ -37,15 +37,15 @@ func (s *Server) ArticleList(ctx *ginConsulRegister.Context) {
 		if strings.Contains(err.Error(), "record not found") {
 			metrics.CommonCounter.Inc("article-list", "record-not-found")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000181, Message: "没有更多数据", Result: []article2.Article{}})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000181, Message: "没有更多数据", Result: []article2.Article{}})
 			return
 		}
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000182, Message: "获取文章列表失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000182, Message: "获取文章列表失败"})
 		return
 	}
 	metrics.CommonCounter.Inc("article-list", "succ")
 	result := map[string]interface{}{"article_list": a, "count": count}
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000180, Message: "获取文章列表成功", Result: result})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000180, Message: "获取文章列表成功", Result: result})
 	return
 }

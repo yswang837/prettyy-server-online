@@ -16,16 +16,16 @@ func (s *Server) LoginOut(ctx *ginConsulRegister.Context) {
 	token := tool.GetToken(ctx.Context)
 	if token == "" {
 		metrics.CommonCounter.Inc("login-out", "empty-token")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000060, Message: "token为空"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000060, Message: "token为空"})
 		return
 	}
 	if err := user.SetExByToken(token); err != nil {
 		metrics.CommonCounter.Inc("login-out", "abandon-token-fail")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000061, Message: "token作废失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000061, Message: "token作废失败"})
 		return
 	}
 	metrics.CommonCounter.Inc("login-out", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000060, Message: "token作废成功"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000060, Message: "token作废成功"})
 	return
 }

@@ -21,7 +21,7 @@ func (s *Server) CheckPassword(ctx *ginConsulRegister.Context) {
 	if err := ctx.Bind(p); err != nil {
 		metrics.CommonCounter.Inc("check-password", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000020, Message: "参数错误"})
 		return
 	}
 	ctx.SetUid(p.Uid)
@@ -29,15 +29,15 @@ func (s *Server) CheckPassword(ctx *ginConsulRegister.Context) {
 	if err != nil {
 		metrics.CommonCounter.Inc("check-password", "get-user-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000021, Message: "获取用户信息失败"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000021, Message: "获取用户信息失败"})
 		return
 	}
 	if u.Password == "" {
 		metrics.CommonCounter.Inc("check-password", "empty-password")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000022, Message: "密码为空，请设置密码"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000022, Message: "密码为空，请设置密码"})
 		return
 	}
 	metrics.CommonCounter.Inc("check-password", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000020, Message: "有效的密码"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000020, Message: "有效的密码"})
 	return
 }

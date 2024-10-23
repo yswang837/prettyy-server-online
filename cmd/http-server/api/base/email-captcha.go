@@ -17,7 +17,7 @@ func (s *Server) GetIdentifyCodeByEmail(ctx *ginConsulRegister.Context) {
 	if email == "" {
 		metrics.CommonCounter.Inc("email-captcha", "params-error")
 		ctx.SetError("参数错误")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000040, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000040, Message: "参数错误"})
 		return
 	}
 	ctx.SetEmail(email)
@@ -27,16 +27,16 @@ func (s *Server) GetIdentifyCodeByEmail(ctx *ginConsulRegister.Context) {
 	if err != nil {
 		metrics.CommonCounter.Inc("email-captcha", "send-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000041, Message: "邮件发送失败，请稍后重试或联系客服"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000041, Message: "邮件发送失败，请稍后重试或联系客服"})
 		return
 	}
 	if err = user.SetExByEmail(email, iCode); err != nil {
 		metrics.CommonCounter.Inc("email-captcha", "set-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000042, Message: "系统内部错误，请稍后重试或联系客服"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000042, Message: "系统内部错误，请稍后重试或联系客服"})
 		return
 	}
 	metrics.CommonCounter.Inc("email-captcha", "succ")
-	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000040, Message: "设置邮箱验证码成功"})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000040, Message: "设置邮箱验证码成功"})
 	return
 }

@@ -37,13 +37,13 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 	if err = ctx.Bind(params); err != nil {
 		metrics.CommonCounter.Inc("like-collect", "params-error")
 		ctx.SetError(err.Error())
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000400, Message: "参数错误"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000400, Message: "参数错误"})
 		return
 	}
 	ctx.SetMuid(params.MUid).SetSuid(params.SUid).SetAid(params.Aid).SetTyp(params.Typ)
 	if params.Typ != invertedIndex.TypMuidLikeSuidAid && params.Typ != invertedIndex.TypMuidCollectSuidAid {
 		metrics.CommonCounter.Inc("like-collect", "typ-error")
-		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000401, Message: "typ类型只能为4或5"})
+		ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000401, Message: "typ类型只能为4或5"})
 		return
 	}
 	isLikeType := params.Typ == invertedIndex.TypMuidLikeSuidAid
@@ -54,7 +54,7 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 		if err = invertedIndex2.Delete(params.Typ, attrValue, params.SUid); err != nil {
 			metrics.CommonCounter.Inc("like-collect", "delete-error")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000402, Message: "删除反向索引失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000402, Message: "删除反向索引失败"})
 			return
 		}
 		if isLikeType {
@@ -63,12 +63,12 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 			if err != nil {
 				metrics.CommonCounter.Inc("like-collect", "update-like-num-error")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000403, Message: "更新点赞数失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000403, Message: "更新点赞数失败"})
 				return
 			}
 			metrics.CommonCounter.Inc("like-collect", "like-num-succ")
 			resp.LikeNum = likeNum
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000400, Message: "取消点赞成功", Result: resp})
+			ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000400, Message: "取消点赞成功", Result: resp})
 			return
 		} else {
 			// 取消收藏类型
@@ -76,12 +76,12 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 			if err != nil {
 				metrics.CommonCounter.Inc("like-collect", "update-collect-num-error")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000404, Message: "更新收藏数失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000404, Message: "更新收藏数失败"})
 				return
 			}
 			metrics.CommonCounter.Inc("like-collect", "collect-num-succ")
 			resp.CollectNum = collectNum
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000401, Message: "取消收藏成功", Result: resp})
+			ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000401, Message: "取消收藏成功", Result: resp})
 			return
 		}
 	} else {
@@ -90,7 +90,7 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 		if err = invertedIndex2.Add(i); err != nil {
 			metrics.CommonCounter.Inc("like-collect", "add-error")
 			ctx.SetError(err.Error())
-			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000405, Message: "添加反向索引失败"})
+			ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000405, Message: "添加反向索引失败"})
 			return
 		}
 		if isLikeType {
@@ -99,12 +99,12 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 			if err != nil {
 				metrics.CommonCounter.Inc("like-collect", "update-like-num-error")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000406, Message: "更新点赞数失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000406, Message: "更新点赞数失败"})
 				return
 			}
 			metrics.CommonCounter.Inc("like-collect", "like-num-succ")
 			resp.LikeNum = likeNum
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000402, Message: "点赞成功", Result: resp})
+			ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000402, Message: "点赞成功", Result: resp})
 			return
 		} else {
 			// 收藏类型
@@ -112,12 +112,12 @@ func (s *Server) ClickLikeCollect(ctx *ginConsulRegister.Context) {
 			if err != nil {
 				metrics.CommonCounter.Inc("like-collect", "update-collect-num-error")
 				ctx.SetError(err.Error())
-				ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000407, Message: "更新收藏数失败"})
+				ctx.JSON(http.StatusBadRequest, &ginConsulRegister.Response{Code: 4000407, Message: "更新收藏数失败"})
 				return
 			}
 			metrics.CommonCounter.Inc("like-collect", "collect-num-succ")
 			resp.CollectNum = collectNum
-			ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000403, Message: "收藏成功", Result: resp})
+			ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000403, Message: "收藏成功", Result: resp})
 			return
 		}
 	}
