@@ -50,6 +50,12 @@ func NewZapLogger() func(ctx *gin.Context) {
 		logFields = appendLogFields("pagesize", myCtx.GetPageSize(), logFields)
 		logFields = appendLogFields("visibility", myCtx.GetVisibility(), logFields)
 		logFields = appendLogFields("typ", myCtx.GetTyp(), logFields)
+		logFields = appendLogFields("title", myCtx.GetTitle(), logFields)
+		logFields = appendLogFields("cover_img", myCtx.GetCoverImg(), logFields)
+		logFields = appendLogFields("cid", myCtx.GetCid(), logFields)
+		logFields = appendLogFields("summary", myCtx.GetSummary(), logFields)
+		logFields = appendLogFields("tags", myCtx.GetTags(), logFields)
+		logFields = appendLogFields("columns", myCtx.GetColumns(), logFields)
 		if len(ctx.Errors) > 0 {
 			logFields = append(logFields, zap.String("req_error", ctx.Errors.String()))
 		}

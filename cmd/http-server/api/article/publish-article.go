@@ -9,6 +9,7 @@ import (
 	"prettyy-server-online/services/article"
 	"prettyy-server-online/services/column"
 	invertedIndex2 "prettyy-server-online/services/inverted-index"
+	"prettyy-server-online/utils/metrics"
 	"prettyy-server-online/utils/tool"
 	"strconv"
 	"strings"
@@ -36,13 +37,18 @@ type articleParams struct {
 }
 
 func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
+	metrics.CommonCounter.Inc("publish-article", "total")
 	params := &articleParams{}
 	if err := ctx.Bind(params); err != nil {
+		metrics.CommonCounter.Inc("publish-article", "params-error")
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000120, Message: "参数错误"})
 		return
 	}
+	aid := xzfSnowflake.GenID(articlePrefix)
+	ctx.SetTitle(params.Title).SetAid(aid).SetCoverImg(params.CoverImg).SetSummary(params.Summary).SetVisibility(params.Visibility).SetTags(params.Tags).SetColumns(params.Column).SetTyp(params.Typ).SetUid(strconv.FormatInt(params.Uid, 10))
 	a := &article2.Article{
-		Aid:        xzfSnowflake.GenID(articlePrefix),
+		Aid:        aid,
 		Title:      params.Title,
 		Content:    tool.Base64Encode(params.Content),
 		CoverImg:   params.CoverImg,
@@ -53,6 +59,8 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 		Uid:        params.Uid,
 	}
 	if err := article.Add(a); err != nil {
+		metrics.CommonCounter.Inc("publish-article", "add-article-fail")
+		ctx.SetError(err.Error())
 		ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000121, Message: "添加文章失败"})
 		return
 	}
@@ -61,6 +69,8 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 	if !invertedIndex2.IsExist(invertedIndex.TypUidAid, uid, a.Aid) {
 		i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidAid, AttrValue: uid, Idx: a.Aid}
 		if err := invertedIndex2.Add(i); err != nil {
+			metrics.CommonCounter.Inc("publish-article", "add-inverted-fail")
+			ctx.SetError(err.Error())
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000122, Message: "添加文章的反向索引失败"})
 			return
 		}
@@ -73,19 +83,26 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 		columns := strings.Split(params.Column, ",")
 		length := len(columns)
 		if length == 0 || length >= 7 || length%2 != 0 {
+			metrics.CommonCounter.Inc("publish-article", "invalid-columns")
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000124, Message: "专栏数量不合法"})
 			return
 		}
 		for i := 0; i < length; i = i + 2 {
 			if len(columns[i]) == 19 && strings.HasPrefix(columns[i], columnPrefix) {
+				metrics.CommonCounter.Inc("publish-article", "old-column")
 				continue
 			}
-			needInsertToColumn[xzfSnowflake.GenID(columnPrefix)] = columns[i+1]
+			metrics.CommonCounter.Inc("publish-article", "new-column")
+			cid := xzfSnowflake.GenID(columnPrefix)
+			needInsertToColumn[cid] = columns[i+1]
+			ctx.SetCid(cid)
 		}
 	}
 	if len(needInsertToColumn) != 0 {
 		// 维护专栏表
 		if err := column.Add(needInsertToColumn, params.Uid); err != nil {
+			metrics.CommonCounter.Inc("publish-article", "add-column-fail")
+			ctx.SetError(err.Error())
 			ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000125, Message: "添加专栏失败"})
 			return
 		}
@@ -94,12 +111,14 @@ func (s *Server) PublishArticle(ctx *ginConsulRegister.Context) {
 			if !invertedIndex2.IsExist(invertedIndex.TypUidCid, uid, cid) {
 				i := &invertedIndex.InvertedIndex{Typ: invertedIndex.TypUidCid, AttrValue: uid, Idx: cid}
 				if err := invertedIndex2.Add(i); err != nil {
+					metrics.CommonCounter.Inc("publish-article", "add-inverted-column-fail")
 					ctx.JSON(http.StatusBadRequest, ginConsulRegister.Response{Code: 4000126, Message: "添加专栏的反向索引失败"})
 					return
 				}
 			}
 		}
 	}
+	metrics.CommonCounter.Inc("publish-article", "succ")
 	ctx.JSON(http.StatusOK, ginConsulRegister.Response{Code: 2000120, Message: "添加文章成功"})
 	return
 }

@@ -126,6 +126,60 @@ func (ctx *Context) GetMuid() string {
 	return muid
 }
 
+func (ctx *Context) SetTitle(title string) *Context {
+	ctx.setMeta("title", title)
+	return ctx
+}
+func (ctx *Context) GetTitle() string {
+	title, _ := ctx.getMeta("title").(string)
+	return title
+}
+
+func (ctx *Context) SetCoverImg(coverImg string) *Context {
+	ctx.setMeta("cover_img", coverImg)
+	return ctx
+}
+func (ctx *Context) GetCoverImg() string {
+	coverImg, _ := ctx.getMeta("cover_img").(string)
+	return coverImg
+}
+
+func (ctx *Context) SetCid(cid string) *Context {
+	ctx.setMeta("cid", cid)
+	return ctx
+}
+func (ctx *Context) GetCid() string {
+	cid, _ := ctx.getMeta("cid").(string)
+	return cid
+}
+
+func (ctx *Context) SetSummary(summary string) *Context {
+	ctx.setMeta("summary", summary)
+	return ctx
+}
+func (ctx *Context) GetSummary() string {
+	summary, _ := ctx.getMeta("summary").(string)
+	return summary
+}
+
+func (ctx *Context) SetTags(tags string) *Context {
+	ctx.setMeta("tags", tags)
+	return ctx
+}
+func (ctx *Context) GetTags() string {
+	tags, _ := ctx.getMeta("tags").(string)
+	return tags
+}
+
+func (ctx *Context) SetColumns(columns string) *Context {
+	ctx.setMeta("columns", columns)
+	return ctx
+}
+func (ctx *Context) GetColumns() string {
+	columns, _ := ctx.getMeta("columns").(string)
+	return columns
+}
+
 func (ctx *Context) SetSuid(suid string) *Context {
 	ctx.setMeta("suid", suid)
 	return ctx

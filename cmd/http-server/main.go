@@ -27,7 +27,7 @@ func main() {
 		middleWare.Cors(),
 		auth.Auth,
 		middleWare.NewZapLogger(),
-		middleWare.NewMetrics("blog_service_"))
+		middleWare.NewMetrics("blog_service_")) // 看了看9999/metrics code等是空的，之后看看，怀疑是中间件的顺序不合理
 	httpServer.AddService(
 		base.NewServer(),
 		user.NewServer(),
