@@ -56,6 +56,7 @@ func NewZapLogger() func(ctx *gin.Context) {
 		logFields = appendLogFields("summary", myCtx.GetSummary(), logFields)
 		logFields = appendLogFields("tags", myCtx.GetTags(), logFields)
 		logFields = appendLogFields("columns", myCtx.GetColumns(), logFields)
+		logFields = appendLogFields("filename", myCtx.GetFilename(), logFields)
 		if len(ctx.Errors) > 0 {
 			logFields = append(logFields, zap.String("req_error", ctx.Errors.String()))
 		}

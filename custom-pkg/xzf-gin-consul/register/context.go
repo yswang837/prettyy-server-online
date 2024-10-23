@@ -108,6 +108,15 @@ func (ctx *Context) GetPage() string {
 	return page
 }
 
+func (ctx *Context) SetFilename(filename string) *Context {
+	ctx.setMeta("filename", filename)
+	return ctx
+}
+func (ctx *Context) GetFilename() string {
+	filename, _ := ctx.getMeta("filename").(string)
+	return filename
+}
+
 func (ctx *Context) SetPageSize(pageSize string) *Context {
 	ctx.setMeta("pageSize", pageSize)
 	return ctx
