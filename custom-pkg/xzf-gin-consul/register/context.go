@@ -135,6 +135,15 @@ func (ctx *Context) GetMuid() string {
 	return muid
 }
 
+func (ctx *Context) SetBirthday(birthday string) *Context {
+	ctx.setMeta("birthday", birthday)
+	return ctx
+}
+func (ctx *Context) GetBirthday() string {
+	birthday, _ := ctx.getMeta("birthday").(string)
+	return birthday
+}
+
 func (ctx *Context) SetTitle(title string) *Context {
 	ctx.setMeta("title", title)
 	return ctx

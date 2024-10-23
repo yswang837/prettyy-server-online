@@ -22,7 +22,6 @@ func NewServer() *Server {
 
 // Init 初始化服务，该目录是nginx托管的前端静态文件的目录，后端upload上来的文件直接放到这里就可以直接访问了
 func (s *Server) Init() (err error) {
-	// 初始化sse通道
 	// 初始化上传文件的目录
 	return os.MkdirAll(uploadDir, os.ModePerm)
 }
