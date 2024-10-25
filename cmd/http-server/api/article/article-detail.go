@@ -16,6 +16,7 @@ type articleDetailParams struct {
 }
 
 func (s *Server) ArticleDetail(ctx *ginConsulRegister.Context) {
+	// todo 不知道为什么前端多次刷新网页，这个接口就卡住了，通过apipost多次请求一样的，基本上是后端的问题，请求是进来了的，但是掉redis和mysql就一直卡住
 	metrics.CommonCounter.Inc("article-detail", "total")
 	params := &articleDetailParams{}
 	if err := ctx.Bind(params); err != nil {

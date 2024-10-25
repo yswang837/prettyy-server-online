@@ -237,25 +237,25 @@ func mapToArticle(m map[string]string) *article.Article {
 	sn, _ := strconv.Atoi(m["share_num"])
 	ln, _ := strconv.Atoi(m["like_num"])
 	uid, _ := strconv.Atoi(m["uid"])
-	a := &article.Article{}
-	a.Aid = m["aid"]
-	a.Title = m["title"]
-	a.Content = tool.Base64Decode(m["content"])
-	a.CoverImg = m["cover_img"]
-	a.Summary = m["summary"]
-	a.Tags = m["tags"]
-	a.Visibility = m["visibility"]
-	a.Typ = m["typ"]
-	a.ShareNum = sn
-	a.CommentNum = cn
-	a.LikeNum = ln
-	a.ReadNum = rn
-	a.CollectNum = con
-	a.Uid = int64(uid)
-	a.Status = m["status"]
-	a.CreateTime = tool.StringToTime(m["create_time"])
-	a.UpdateTime = tool.StringToTime(m["update_time"])
-	return a
+	return &article.Article{
+		Aid:        m["aid"],
+		Title:      m["title"],
+		Content:    tool.Base64Decode(m["content"]),
+		CoverImg:   m["cover_img"],
+		Summary:    m["summary"],
+		Tags:       m["tags"],
+		Visibility: m["visibility"],
+		Typ:        m["typ"],
+		ShareNum:   sn,
+		CommentNum: cn,
+		LikeNum:    ln,
+		ReadNum:    rn,
+		CollectNum: con,
+		Status:     m["status"],
+		Uid:        int64(uid),
+		CreateTime: tool.StringToTime(m["create_time"]),
+		UpdateTime: tool.StringToTime(m["update_time"]),
+	}
 }
 
 func Add(a *article.Article) (err error) {
