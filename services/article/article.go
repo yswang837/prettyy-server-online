@@ -64,16 +64,16 @@ func (c *Client) IncrReadNum(aid string) error {
 	if aid == "" {
 		return tool.ErrParams
 	}
-	a, err := c.Get(aid)
-	if err != nil {
-		return err
-	}
-	a.ReadNum++
-	m := map[string]interface{}{"read_num": a.ReadNum}
-	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
-		return errors.New("redis incr read num failed: " + err.Error())
-	}
-	if err = c.manager.IncrReadNum(aid); err != nil {
+	//a, err := c.Get(aid)
+	//if err != nil {
+	//	return err
+	//}
+	//a.ReadNum++
+	//m := map[string]interface{}{"read_num": a.ReadNum}
+	//if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+	//	return errors.New("redis incr read num failed: " + err.Error())
+	//}
+	if err := c.manager.IncrReadNum(aid); err != nil {
 		return errors.New("mysql incr read num failed: " + err.Error())
 	}
 	return nil
@@ -83,13 +83,13 @@ func (c *Client) Get(aid string) (*article.Article, error) {
 	if aid == "" {
 		return nil, tool.ErrParams
 	}
-	articleMap, err := c.cacheManager.HGetAll(aid)
-	if err != nil {
-		return nil, errors.New("get article from redis failed: " + err.Error())
-	}
-	if len(articleMap) != 0 {
-		return mapToArticle(articleMap), nil
-	}
+	//articleMap, err := c.cacheManager.HGetAll(aid)
+	//if err != nil {
+	//	return nil, errors.New("get article from redis failed: " + err.Error())
+	//}
+	//if len(articleMap) != 0 {
+	//	return mapToArticle(articleMap), nil
+	//}
 	art, err := c.manager.Get(aid)
 	if err != nil {
 		return nil, errors.New("get article from mysql failed: " + err.Error())
