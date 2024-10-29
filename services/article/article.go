@@ -7,7 +7,6 @@ import (
 	invertedIndex2 "prettyy-server-online/services/inverted-index"
 	"prettyy-server-online/utils/tool"
 	"strconv"
-	"time"
 )
 
 type Client struct {
@@ -48,11 +47,11 @@ func (c *Client) Add(a *article.Article) (err error) {
 	if err = c.manager.Add(a); err != nil {
 		return errors.New("add article to mysql failed: " + err.Error())
 	}
-	a.CreateTime = time.Now()
-	a.UpdateTime = time.Now()
-	if _, err = c.cacheManager.HMSet(a.Aid, articleToMap(a)); err != nil {
-		return errors.New("set article to redis failed: " + err.Error())
-	}
+	//a.CreateTime = time.Now()
+	//a.UpdateTime = time.Now()
+	//if _, err = c.cacheManager.HMSet(a.Aid, articleToMap(a)); err != nil {
+	//	return errors.New("set article to redis failed: " + err.Error())
+	//}
 	return
 }
 
@@ -119,10 +118,10 @@ func (c *Client) UpdateLikeNum(aid string, isAddClick bool) (int, error) {
 	} else {
 		a.LikeNum--
 	}
-	m := map[string]interface{}{"like_num": a.LikeNum}
-	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
-		return 0, errors.New("redis update like num failed: " + err.Error())
-	}
+	//m := map[string]interface{}{"like_num": a.LikeNum}
+	//if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+	//	return 0, errors.New("redis update like num failed: " + err.Error())
+	//}
 	if isAddClick {
 		if err = c.manager.IncrLikeNum(aid); err != nil {
 			return 0, errors.New("mysql incr like num failed: " + err.Error())
@@ -152,10 +151,10 @@ func (c *Client) UpdateCollectNum(aid string, isAddClick bool) (int, error) {
 	} else {
 		a.CollectNum--
 	}
-	m := map[string]interface{}{"collect_num": a.CollectNum}
-	if _, err = c.cacheManager.HMSet(aid, m); err != nil {
-		return 0, errors.New("redis update collect num failed: " + err.Error())
-	}
+	//m := map[string]interface{}{"collect_num": a.CollectNum}
+	//if _, err = c.cacheManager.HMSet(aid, m); err != nil {
+	//	return 0, errors.New("redis update collect num failed: " + err.Error())
+	//}
 	if isAddClick {
 		if err = c.manager.IncrCollectNum(aid); err != nil {
 			return 0, errors.New("mysql incr collect num failed: " + err.Error())

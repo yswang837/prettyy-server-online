@@ -72,12 +72,12 @@ func (c *Client) Add(u *user.User) (userObj *user.User, err error) {
 	if userObj, err = c.manager.Add(u); err != nil {
 		return nil, errors.New("register to mysql failed: " + err.Error())
 	}
-	u.CreateTime = time.Now()
-	u.UpdateTime = time.Now()
-	u.LoginTime = time.Now()
-	if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), UserToMap(u)); err != nil {
-		return nil, errors.New("register to redis failed: " + err.Error())
-	}
+	//u.CreateTime = time.Now()
+	//u.UpdateTime = time.Now()
+	//u.LoginTime = time.Now()
+	//if _, err = c.cacheManager.HMSet(strconv.FormatInt(u.Uid, 10), UserToMap(u)); err != nil {
+	//	return nil, errors.New("register to redis failed: " + err.Error())
+	//}
 	return
 }
 
@@ -139,18 +139,19 @@ func (c *Client) GetUser(uid string) (*user.User, error) {
 	if uid == "" {
 		return nil, tool.ErrParams
 	}
-	m, err := c.cacheManager.HGetAll(uid)
-	if err != nil {
-		return nil, err
-	}
-	var u *user.User
-	if len(m) != 0 {
-		u = MapToUser(m)
-		if u != nil {
-			return u, nil
-		}
-	}
-	u, err = c.manager.Get(uid)
+	// 多次重复查询容易pending，临时注释，不知道是不是和redis部署到容器中有关系，
+	//m, err := c.cacheManager.HGetAll(uid)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//var u *user.User
+	//if len(m) != 0 {
+	//	u = MapToUser(m)
+	//	if u != nil {
+	//		return u, nil
+	//	}
+	//}
+	u, err := c.manager.Get(uid)
 	if err != nil {
 		return nil, err
 	}
