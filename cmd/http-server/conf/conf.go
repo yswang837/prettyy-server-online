@@ -21,4 +21,5 @@ const (
 	URLLikeCollectArticle  = "/article/like-collect"
 	URLGetColumnList       = "/column/list"
 	URLFileUpload          = "/file/upload"
+	URLChat                = "/chat"
 )

@@ -8,6 +8,7 @@ import (
 	"prettyy-server-online/cmd/http-server/api/column"
 	"prettyy-server-online/cmd/http-server/api/common"
 	"prettyy-server-online/cmd/http-server/api/user"
+	"prettyy-server-online/cmd/http-server/api/websocket"
 	"prettyy-server-online/cmd/http-server/auth"
 	middleWare "prettyy-server-online/custom-pkg/xzf-gin-consul/middle-ware"
 	ginConsulRegister "prettyy-server-online/custom-pkg/xzf-gin-consul/register"
@@ -33,7 +34,8 @@ func main() {
 		user.NewServer(),
 		article.NewServer(),
 		common.NewServer(),
-		column.NewServer())
+		column.NewServer(),
+		websocket.NewServer())
 	container.AddServer(httpServer)
 	// 监控服务
 	metricsServer := ginConsulRegister.NewGinServer("blog-service-metrics")
