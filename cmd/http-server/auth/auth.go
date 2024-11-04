@@ -118,7 +118,9 @@ func sortParams(m url.Values) string {
 	for k, v := range m {
 		// 上传文件接口，file字段本身就获取不到，这里也写明直接排除
 		// 发布文章接口，content内容多且杂，也排除
-		if k == "sign" || k == "file" || k == "content" {
+		// 加上k=Authorization，兼容websocket的请求，这里也排除
+		// sign本身不参与验签
+		if k == "sign" || k == "file" || k == "content" || k == "authorization" {
 			continue
 		}
 		if len(v) != 0 {

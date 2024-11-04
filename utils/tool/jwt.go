@@ -70,6 +70,9 @@ func IsTokenValid(tokenStr string) bool {
 func GetToken(c *gin.Context) string {
 	token := c.Request.Header.Get("Authorization")
 	if token == "" {
+		token = c.Query("authorization") // 兼容websocket请求
+	}
+	if token == "" {
 		return ""
 	}
 	splitToken := strings.Split(token, " ")
