@@ -54,6 +54,6 @@ func (s *Server) FileUpload(ctx *ginConsulRegister.Context) {
 		ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://127.0.0.1:6677/uploads/%s", tool.MakeFileName(file.Filename))})
 		return
 	}
-	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://120.26.203.121/uploads/%s", tool.MakeFileName(file.Filename))})
+	ctx.JSON(http.StatusOK, &ginConsulRegister.Response{Code: 2000140, Message: "上传文件成功", Result: fmt.Sprintf("http://139.224.36.93/uploads/%s", tool.MakeFileName(file.Filename))})
 	return
 }
